@@ -1,0 +1,177 @@
+Acc
+!acne
+ACS
+acute myelogenous leukemia
+AHA
+!all
+alopecia
+!alt
+AMAN
+AML
+amyloidosis
+anaplastic oligodendroglioma
+anaplastic thyroid carcinoma
+APL
+!arm
+asbestosis
+ASD
+asp
+astrocytoma
+atrial septal defect
+AVN
+bacterial endocarditis
+!bid
+!binding
+BMD
+BOOP
+!cad
+Caps
+Cardiogenic shock
+CCAM
+CDI
+CEA
+ced
+Cholangiocarcinoma
+CHRONIC MYELOGENOUS LEUKEMIA
+chronic myelomonocytic leukemia
+CIE
+CMC
+CML
+CMML
+CNM
+COR
+CPI
+CTX
+cystic fibrosis
+!DC
+!DD
+DI
+!DIS
+DOA
+Drs
+duodenal atresia
+!dur
+EMA
+ET
+FA
+!face
+!fed
+FH
+!fire
+!FS
+gastric adenocarcinoma
+GBM
+GBS
+!get
+glioblastoma
+glioblastoma multiforme
+glioma
+gliomatosis cerebri
+!GRA
+Graft versus host disease
+!has
+!hat
+HDL
+!he
+Hem
+Hep
+hepatocellular carcinoma
+!HCC
+!HI
+!hit
+Hos
+!HS
+hsp
+Hyaline Membrane Disease
+hypertrophic obstructive cardiomyopathy
+IgA nephropathy
+Insulin dependent diabetes mellitus
+Interstitial cystitis
+IPs
+IU
+!Jet
+!kin
+Klatskin tumor
+!LAD
+leiomyosarcoma
+LF
+!LI
+LM
+!lymphoma
+!MAE
+mal
+MAT
+!MD
+!MED
+mitochondrial myopathy
+MIXED CONNECTIVE TISSUE DISEASE
+!mls
+MMF
+!MSK
+multiple myeloma
+MVA
+myasthenia gravis
+myelodysplastic syndrome
+narcolepsy
+!neuromuscular disease
+!NKA
+!NS
+oligodendroglioma
+omphalocele
+ovarian cancer
+!PAF
+pai
+!pale
+!pan
+!PC
+!PCA
+PCL
+PIC
+!plan
+plasmacytoma
+Pls
+!PM
+PMD
+poliomyelitis
+polycythemia vera
+polymyalgia rheumatica
+!pot
+progressive supranuclear palsy
+PSC
+pv
+RAI
+RCC
+renal cell carcinoma
+rheumatic fever
+ROP
+!Sao
+sarcoidosis
+!Sas
+SIADH
+!sip
+SLE
+SMA
+small cell lung cancer
+SSS
+!syndrome
+Systemic lupus erythematosus
+!tap
+!TD
+temporal arteritis
+TETANUS
+thrombotic thrombocytopenic purpura
+thymoma
+trigeminal neuralgia
+Trisomy 21
+tsp
+ttp
+tuberculosis
+UEs
+ups
+!V
+!V1
+VSD
+WS
+wss
+yf
+zs

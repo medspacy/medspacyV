@@ -1,0 +1,6 @@
+pandas
+medspacy
+spacy
+pyinstaller
+openpyxl
+py-splash

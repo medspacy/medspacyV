@@ -1,0 +1,141 @@
+SEC_ID	SYNONYM	SOURCE	COMMENT
+addendum	ADDENDUM	medspaCy	
+addendum	Addendum	medspaCy	
+allergy	ALLERGIC REACTIONS	medspaCy	
+allergy	ALLERGIES	medspaCy	
+allergies	Allergies	medspaCy	
+chief_complaint	CC	medspaCy	
+chief_complaint	CHIEF COMPLAINT	medspaCy	
+chief_complaint	Chief Complaint	medspaCy	
+comments	COMMENTS	medspaCy	
+patient_education	CONSENT	medspaCy	
+diagnoses	ADMISSION DIAGNOSES	medspaCy	
+diagnoses	DIAGNOSES	medspaCy	
+diagnoses	Primary Diagnosis	medspaCy	
+diagnoses	Primary	medspaCy	
+diagnoses	SECONDARY DIAGNOSES	medspaCy	
+diagnoses	Secondary Diagnoses	medspaCy	
+diagnoses	Secondary Diagnosis	medspaCy	
+diagnoses	Secondary	medspaCy	
+family_history	Family History	medspaCy	
+family_history	FAMILY HISTORY	medspaCy	
+history_of_present_illness	HISTORY OF PRESENT ILLNESS	medspaCy	
+history_of_present_illness	History present illness	medspaCy	
+history_of_present_illness	HPI	medspaCy	
+history_of_present_illness	Consulting HPI	medspaCy	
+history_of_present_illness	Consult	medspaCy	
+history_of_present_illness	Clinical Preamble	medspaCy	
+history_of_present_illness	CLINICAL INDICATION	medspaCy	
+history_of_present_illness	CLINICAL PREAMBLE	medspaCy	
+hospital_course	Brief Hospital Course	medspaCy	
+hospital_course	CONCISE SUMMARY OF HOSPITAL COURSE BY ISSUE/SYSTEM	medspaCy	
+hospital_course	HOSPITAL COURSE	medspaCy	
+hospital_course	SUMMARY OF HOSPITAL COURSE	medspaCy	
+imaging	IMAGING	medspaCy	
+imaging	TECHNIQUE	medspaCy	
+imaging	INTERPRETATION	medspaCy	
+imaging	Imaging	medspaCy	
+imaging	MRI	medspaCy	
+imaging	Radiology	medspaCy	
+labs_and_studies	ADMISSION LABS	medspaCy	
+labs_and_studies	MICROBIOLOGY SPECIMEN SUMMARY	medspaCy	
+labs_and_studies	Vital Signs	medspaCy	
+labs_and_studies	Admission Labs	medspaCy	
+labs_and_studies	Discharge Labs	medspaCy	
+labs_and_studies	ECHO	medspaCy	
+labs_and_studies	FINDINGS	medspaCy	
+labs_and_studies	On exam	medspaCy	
+labs_and_studies	Laboratory Tests	medspaCy	
+labs_and_studies	Laboratory Last Values	medspaCy	
+labs_and_studies	Findings	medspaCy	
+labs_and_studies	INDICATION	medspaCy	
+labs_and_studies	LABS	medspaCy	
+labs_and_studies	Labs	medspaCy	
+labs_and_studies	MICRO	medspaCy	
+labs_and_studies	Micro	medspaCy	
+labs_and_studies	Microbiology	medspaCy	
+labs_and_studies	Pertinent Results	medspaCy	
+labs_and_studies	STUDIES	medspaCy	
+labs_and_studies	Studies	medspaCy	
+medications	ACTIVE MEDICATIONS LIST	medspaCy	
+medications	ACTIVE MEDICATIONS	medspaCy	
+medications	ADMISSION MEDICATIONS	medspaCy	
+medications	CURRENT MEDICATIONS	medspaCy	
+medications	DISCHARGE MEDICATIONS	medspaCy	
+medications	Discharge Medications	medspaCy	
+medications	HOME MEDICATIONS	medspaCy	
+medications	MEDICATIONS AT HOME	medspaCy	
+medications	Home Medication	medspaCy	
+medications	MEDICATIONS LIST	medspaCy	
+medications	MEDICATIONS ON ADMISSION	medspaCy	
+medications	MEDICATIONS ON DISCHARGE	medspaCy	
+medications	MEDICATIONS ON TRANSFER	medspaCy	
+medications	MEDICATIONS PRIOR TO ADMISSION	medspaCy	
+medications	MEDICATIONS	medspaCy	
+medications	MEDICATIONS	medspaCy	
+neurological	Neuro	medspaCy	
+observation_and_plan	A/P	medspaCy	
+observation_and_plan	ASSESSMENT/PLAN	medspaCy	
+observation_and_plan	ASSESSMENT	medspaCy	
+observation_and_plan	Reassesment	medspaCy	
+observation_and_plan	Assessment/Plan	medspaCy	
+observation_and_plan	PLAN/DISPOSITION	medspaCy	
+observation_and_plan	Clinical Impression	medspaCy	
+observation_and_plan	Impression and plan	medspaCy	
+observation_and_plan	DISCHARGE DIAGNOSES	medspaCy	
+observation_and_plan	Discharge Plan	medspaCy	
+observation_and_plan	DISCHARGE DIAGNOSIS	medspaCy	
+observation_and_plan	FINAL ASSESSMENT	medspaCy	
+observation_and_plan	Discharge Condition	medspaCy	
+observation_and_plan	Discharge Diagnoses	medspaCy	
+observation_and_plan	Discharge Diagnosis	medspaCy	
+observation_and_plan	Discharge Disposition	medspaCy	
+observation_and_plan	FINAL DIAGNOSES	medspaCy	
+observation_and_plan	FINAL DIAGNOSIS	medspaCy	
+observation_and_plan	IMPRESSION	medspaCy	
+observation_and_plan	Impression and Plan	medspaCy	
+observation_and_plan	Impression and Recommendation	medspaCy	
+other	Facility	medspaCy	
+other	Service	medspaCy	
+past_medical_history	Current Medical Problems	medspaCy	
+past_medical_history	HISTORY	medspaCy	
+past_medical_history	PAST HISTORY	medspaCy	
+past_medical_history	CLINICAL HISTORY	medspaCy	
+past_medical_history	History of Chronic Illness	medspaCy	
+past_medical_history	MHx	medspaCy	
+past_medical_history	PAST HISTORY	medspaCy	
+past_medical_history	PAST MEDICAL HISTORY	medspaCy	
+past_medical_history	Past med history	medspaCy	
+past_medical_history	PAST MEDICAL Hx	medspaCy	
+past_medical_history	PAST SURGICAL HISTORY	medspaCy	
+past_medical_history	PMH	medspaCy	
+past_medical_history	PMHx	medspaCy	
+past_medical_history	Past Medical History	medspaCy	
+past_medical_history	UNDERLYING MEDICAL CONDITION	medspaCy	
+patient_education	Education	medspaCy	
+patient_education	Patient Education	medspaCy	
+patient_instructions	DISCHARGE INSTRUCTIONS/FOLLOWUP	medspaCy	
+patient_instructions	DISCHARGE INSTRUCTIONS	medspaCy	
+patient_instructions	Discharge Instructions	medspaCy	
+patient_instructions	Followup Instructions	medspaCy	
+physical_exam	PE	medspaCy	
+physical_exam	PHYSICAL EXAM	medspaCy	
+physical_exam	PHYSICAL EXAMINATION	medspaCy	
+physical_exam	Physical Exam	medspaCy	
+physical_exam	Physical exam	medspaCy	
+problem_list	Active Problem List	medspaCy	
+problem_list	Current Problems	medspaCy	
+problem_list	Medical Problems	medspaCy	
+problem_list	PROBLEM LIST	medspaCy	
+problem_list	Problem List	medspaCy	
+hospital_course	PROCEDURE NOTE	medspaCy	
+hospital_course	PROCEDURE AND FINDING	medspaCy	
+reason_for_examination	REASON FOR THIS EXAMINATION	medspaCy	
+signature	Electronic Signature	medspaCy	
+signature	Signed electronically by	medspaCy	
+social_history	PMHSx	medspaCy	
+social_history	PSH	medspaCy	
+social_history	SH	medspaCy	
+social_history	Sexual History	medspaCy	
+social_history	Social History	medspaCy	
+social_history	SOCIAL HISTORY	medspaCy	
