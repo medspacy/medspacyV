@@ -1,123 +1,157 @@
+# importing necessary libraries
+
+import os
+import sys
+import argparse
+import logging
+import numpy as np
+import pandas as pd
+
 import tkinter as tk
 from tkinter import messagebox
-import tkinter.font as tkfont  # Import the Font module
-import pandas as pd
-import os
-import numpy as np
-import helper.constants as CNST
+import tkinter.font as tkfont
+
+# importing custom modules
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
+import constants as CNST
+
+# Setting up logging
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 class AnnotationViewer:
     def __init__(self, master, output_data, notes_dir, csv_file_chk):
+        """
+        Initializes the Annotation Viewer application.
+        
+        Args:
+            master (tk.Tk): The root window of the Tkinter application.
+            output_data (str): The path to the output directory containing annotated files.
+            notes_dir (str): The directory containing clinical notes.
+            csv_file_chk (bool): Flag indicating whether to process CSV files.
+        """
         self.master = master
         self.master.title(f"Annotation Viewer - {output_data}")
         
         self.notes_dir = notes_dir
         self.csv_file_chk = csv_file_chk
         
-        # Get screen width and height
+        # Screen width and height for responsive sizing
         screen_width = self.master.winfo_screenwidth()
         screen_height = self.master.winfo_screenheight()
         
-        # Set default window size
-        default_width = int(screen_width * 0.8)  # 80% of screen width
-        default_height = int(screen_height * 0.8)  # 80% of screen height
+        # Default window size (80% of screen width & height)
+        default_width = int(screen_width * 0.8)
+        default_height = int(screen_height * 0.8)
         
-        # Set window geometry
+        # Centered the window on the screen
         self.master.geometry(f"{default_width}x{default_height}+{screen_width // 10}+{screen_height // 10}")
 
-        # Create a PanedWindow to hold left and right panels, allowing them to be resized
+        # Created a PanedWindow to hold left and right panels, allowing resizing
         self.paned_window = tk.PanedWindow(self.master, orient=tk.HORIZONTAL)
         self.paned_window.pack(fill=tk.BOTH, expand=1)
 
-        # Adjusting left panel width to occupy one-fourth of the window
-        left_panel_width = self.master.winfo_screenwidth() // 4.5
+        # Left panel width (about one-fourth of screen width)
+        left_panel_width = screen_width // 4.5
 
-        # Left Panel: List of files
+        # Left Panel: List of annotated files
         self.left_frame = tk.Frame(self.paned_window, width=left_panel_width)
         self.paned_window.add(self.left_frame, minsize=200)
-        # self.left_frame.grid(row=0, column=0, sticky="nsew")
         self.left_frame.columnconfigure(0, weight=1)
         self.left_frame.rowconfigure(1, weight=1)
 
-        # Creating a font with larger size and bold style
+        # Created a bold font for labels
         label_font = tkfont.Font(family="Arial", size=12, weight="bold")
 
+        # Created label for the list of files
         self.file_list_label = tk.Label(self.left_frame, text="Annotated Files:", font=label_font)
         self.file_list_label.grid(row=0, column=0, sticky="w")
 
+        # Listbox to display available annotation files
         self.file_listbox = tk.Listbox(self.left_frame)
         self.file_listbox.grid(row=1, column=0, sticky="nsew")
-        self.file_listbox.bind("<<ListboxSelect>>", self.load_annotation)
+        self.file_listbox.bind("<<ListboxSelect>>", self.load_annotation)  # Load annotation on selection
         
-        # Adding scrollbar to the listbox
+        # Added vertical scrollbar to listbox
         scrollbar = tk.Scrollbar(self.left_frame, orient="vertical", command=self.file_listbox.yview)
         scrollbar.grid(row=1, column=1, sticky="ns")
         self.file_listbox.config(yscrollcommand=scrollbar.set)
+        
+        # Added horizontal scrollbar to listbox
         scrollbar_x = tk.Scrollbar(self.left_frame, orient="horizontal", command=self.file_listbox.xview)
         scrollbar_x.grid(row=2, column=0, sticky="we")
         self.file_listbox.config(xscrollcommand=scrollbar_x.set)
 
+        # Added navigation buttons for browsing files
         self.back_button = tk.Button(self.left_frame, text="Back", command=self.load_previous_file)
         self.back_button.grid(row=2, column=0, sticky="w", padx=5, pady=5)
         
         self.next_button = tk.Button(self.left_frame, text="Next", command=self.load_next_file)
         self.next_button.grid(row=2, column=0, sticky="e", padx=5, pady=5)
 
+        # Added right panel for displaying annotation details
         self.right_frame = tk.Frame(self.paned_window)
         self.paned_window.add(self.right_frame, minsize=200)
-        # self.right_frame.grid(row=0, column=1, sticky="nsew")
         self.right_frame.columnconfigure(0, weight=1)
         self.right_frame.rowconfigure(0, weight=1)
 
-        # Add a Text widget and a Scrollbar widget to the right frame        
+        # Added text widget to display annotation content
         self.annotation_text = tk.Text(self.right_frame, wrap="word")
         self.annotation_text.grid(row=0, column=0, sticky="nsew")
         self.annotation_text.config(state="disabled")
         
-        # Add a scrollbar to the right frame
+        # Added vertical scrollbar for annotation text
         scrollbar = tk.Scrollbar(self.right_frame, orient="vertical", command=self.annotation_text.yview)
         scrollbar.grid(row=0, column=1, sticky="ns")
-        # Configure the scrollbar to scroll the annotation_text widget
         self.annotation_text.config(yscrollcommand=scrollbar.set)
         
+        # Added horizontal scrollbar for annotation text
         scrollbar_x = tk.Scrollbar(self.right_frame, orient="horizontal")
         scrollbar_x.grid(row=1, column=0, sticky="we")
         self.annotation_text.config(xscrollcommand=lambda *args: scrollbar_x.set(*args))
-
         scrollbar_x.config(command=self.annotation_text.xview)
 
+        # Folder path and file tracking
         self.folder_path = output_data
         self.current_page = 0
         self.files_per_page = CNST.MAX_FILES_PER_PAGE
         self.file_paths = []
-        # Load data from Excel file
-        #self.annotation_data = pd.read_excel(r"H:\Projects\Fred_MedSpacy\test7\Fred_MedSpacy_2024-03-12_10-16-53.xlsx")
+        
+        # Load data from output directory
         self.load_data_in_folder(output_data)
 
-        # Configure main grid row and column to expand with window
+        # Configuration of main grid to resize dynamically
         self.master.columnconfigure(0, weight=1)
         self.master.columnconfigure(1, weight=3)
         self.master.rowconfigure(0, weight=1)
 
-        # Configure file_list_label to occupy exactly one row and one column
+        # Preventing left panel from shrinking beyond its intended size
         self.left_frame.grid_propagate(False)
         
-        # Additional Info Box
+        # Additional info pop-up box for annotation details
         self.additional_info_label = tk.Label(self.right_frame, text="", wraplength=200, justify="left")
-        # self.additional_info_label.config(bg="yellow")  # Set background color
-        self.additional_info_label.place_forget()  # Initially hide the label
-        self.additional_info_label.bind("<Leave>", self.hide_additional_info)  # Bind leave event
-        self.annotation_text.bind("<Motion>", self.show_additional_info)  # Bind motion event
+        self.additional_info_label.place_forget()
+        self.additional_info_label.bind("<Leave>", self.hide_additional_info)
+        self.annotation_text.bind("<Motion>", self.show_additional_info)
         
-        # self.unique_concepts = sorted(self.annotation_data['concept'].unique().tolist())
+        # Tp process annotation data and extract unique concepts
         self.concept_dict = self.create_concept_dict(self.annotation_data)
-        print(f"Getting Concepts: {self.concept_dict}")
         self.concept_colors = self.assign_colors(self.concept_dict)
-        # Save some information to display them later
-        self.annotation_row=pd.DataFrame()
+        
+        # Crated a placeholder for storing annotation data for current selection
+        self.annotation_row = pd.DataFrame()
         self.current_page = 0
 
+        self.logger = logging.getLogger(__name__) 
+
     def load_data_in_folder(self, output_data):
+        """
+        Loads Excel files from the specified output directory and initializes the file list.
+        
+        Args:
+            output_data (str): Path to the directory containing annotation Excel files.
+        """
 
         output_data = output_data.replace('\\','/')
 
@@ -128,8 +162,12 @@ class AnnotationViewer:
             self.load_current_file()
         else:
             messagebox.showerror("Error", "No Excel files found in the specified folder.")
+            self.logger.error(f"Error - No Excel files found in the specified folder : {e}")
 
     def load_current_file(self):
+        """
+        Loads the currently selected Excel file and updates the annotation data.
+        """
         if not self.file_paths:
             return
         
@@ -146,6 +184,9 @@ class AnnotationViewer:
         self.update_navigation_buttons()
 
     def update_file_list_display(self):
+        """
+        Updates the file list display in the listbox based on pagination.
+        """
         self.file_listbox.delete(0, tk.END)
         start_index = self.current_page * self.files_per_page
         end_index = start_index + self.files_per_page
@@ -154,6 +195,9 @@ class AnnotationViewer:
         self.update_navigation_buttons()
 
     def update_navigation_buttons(self):
+        """
+        Updates the state of navigation buttons based on the current page.
+        """
         total_pages = len(self.file_list) // self.files_per_page + (1 if len(self.file_list) % self.files_per_page != 0 else 0)
         if self.current_page == 0:
             self.back_button.config(state="disabled")
@@ -166,20 +210,44 @@ class AnnotationViewer:
             self.next_button.config(state="normal")
     
     def load_next_file(self):
+        """
+        Advances to the next page of the file list if available.
+        """
         if self.current_page < (len(self.file_list) // self.files_per_page):
             self.current_page += 1
             self.update_file_list_display()
 
     def load_previous_file(self):
+        """
+        Goes back to the previous page of the file list if available.
+        """
         if self.current_page > 0:
             self.current_page -= 1
             self.update_file_list_display()
 
     def create_concept_dict(self, df):
+        """
+        Creates a dictionary mapping each unique concept to its matched text occurrences.
+        
+        Args:
+            df (pd.DataFrame): The DataFrame containing annotation data.
+        
+        Returns:
+            dict: A dictionary where keys are concepts and values are lists of matched texts.
+        """
         concept_dict = df.groupby('concept')['matched_text'].apply(lambda x: x.unique().tolist()).to_dict()
         return concept_dict
 
     def assign_colors(self, concept_dict):
+        """
+        Assigns colors to each matched text based on the concept it belongs to.
+        
+        Args:
+            concept_dict (dict): Dictionary mapping concepts to matched text occurrences.
+        
+        Returns:
+            dict: A dictionary mapping matched texts to their assigned colors.
+        """
         colors = {}
         for i, (concept, matched_texts) in enumerate(concept_dict.items()):
             base_color = CNST.COLOR_LIST[i % len(CNST.COLOR_LIST)]
@@ -188,6 +256,12 @@ class AnnotationViewer:
         return colors
         
     def show_additional_info(self, event):
+        """
+        Displays additional information about a highlighted annotation when the user hovers over it.
+        
+        Args:
+            event (tk.Event): The motion event triggering the display.
+        """
         index = self.annotation_text.index(f"@{event.x},{event.y}")
         tags = self.annotation_text.tag_names(index)
 
@@ -216,18 +290,35 @@ class AnnotationViewer:
                     x, y, _, _ = self.annotation_text.bbox(start)  # Use start instead of index
                     self.additional_info_label.place(x=x, y=y + 20, anchor="nw")
                 except Exception as e:
-                    print("Error displaying additional info:", e)
+                    self.logger.error(f"Error displaying additional info : {e}")
 
                 self.annotation_text.bind("<Leave>", self.hide_additional_info)
 
 
     def hide_additional_info(self, event):
+        """
+        Hides the additional information pop-up when the mouse leaves the annotation area.
+        
+        Args:
+            event (tk.Event): The leave event triggering the hide action.
+        """
         # Unbind the show_additional_info function from the text widget
         self.annotation_text.unbind("<Motion>")
         # Hide the additional info label
         self.additional_info_label.place_forget()
         
     def fetch_additional_info(self, highlighted_text, start,end):
+        """
+        Retrieves additional annotation details for a highlighted text span.
+        
+        Args:
+            highlighted_text (str): The text that is highlighted.
+            start (str): The starting position in the text widget.
+            end (str): The ending position in the text widget.
+        
+        Returns:
+            str: Formatted string containing annotation details.
+        """
         # You can implement your logic here to fetch additional info based on highlighted text
         # Extracted startline and start values
         start_sentenct, start_in_sent = map(int, start.split('.'))
@@ -238,7 +329,6 @@ class AnnotationViewer:
         result = self.annotation_row[  (self.annotation_row['start_sentenct'] == start_sentenct) & (self.annotation_row['start_in_sent'] == start_in_sent)
                                      & (self.annotation_row['end_sentence'] == end_sentence) & (self.annotation_row['end_in_sent'] == end_in_sent)]
         
-        #print(f"Hi Elham result: {len(result)}")
         result=result.reset_index(drop=True)
         # Prepare the extra information to show
         try:
@@ -250,9 +340,7 @@ class AnnotationViewer:
             section_id = '' if pd.isna(result.loc[0,'section_id']) else result.loc[0,'section_id']
             concept_label = '' if pd.isna(result.loc[0, 'concept']) else result.loc[0, 'concept']
         except Exception as e:
-            #print("Error")
-            #print(result)
-            print(e)
+            self.logger.error(f"Exception has occured while preparing extra information : {e}")
 
         # For now, let's assume a simple implementation
         additional_info = (f"{'<'+concept_label+'>'}".center(20) + "\n" + 
@@ -265,12 +353,25 @@ class AnnotationViewer:
         return additional_info
 
     def bind_highlight_event(self):
+        """
+        Binds hover events to highlighted text annotations to show additional info.
+        """
         for tag in self.annotation_text.tag_names():
             if tag.startswith("highlight_"):
                 self.annotation_text.tag_bind(tag, "<Enter>", self.show_additional_info)
 
     # Find the sentence number of the given Index and character counts until the one sentence before the containing sentence 
     def find_sentence_number(self, text, char_index):
+        """
+        Determines the sentence number and character offset for a given index in text.
+        
+        Args:
+            text (str): The full document text.
+            char_index (int): The character index to locate.
+        
+        Returns:
+            tuple: (Sentence number, character offset before the sentence).
+        """
         # Split the text into sentences based on newline characters (\n)
         sentences = text.split("\n")
         
@@ -300,6 +401,18 @@ class AnnotationViewer:
         return -1, -1  # Indicates that the character index is out of bounds
     
     def load_csv_files(self, notes_dir):
+        """
+        Loads and validates CSV files from the specified directory.
+        
+        Args:
+            notes_dir (str): Path to the directory containing CSV files.
+        
+        Raises:
+            ValueError: If no CSV files are found or required columns are missing.
+        
+        Returns:
+            pd.DataFrame: Combined DataFrame of all CSV file contents.
+        """
         csv_files = [f for f in os.listdir(notes_dir) if f.endswith('.csv')]
         if not csv_files:
             raise ValueError("No CSV files found in the directory.")
@@ -308,7 +421,7 @@ class AnnotationViewer:
         for csv_file in csv_files:
             csv_path = os.path.join(notes_dir, csv_file)
             csv_path = os.path.normpath(csv_path)
-            print(f"Annotating the file: {csv_path}")
+            self.logger.info(f"Annotating the file: {csv_path}")
 
             input_csv_file = pd.read_csv(csv_path)
 
@@ -324,12 +437,17 @@ class AnnotationViewer:
 
 
     def load_annotation(self, event):
+        """
+        Loads annotation data for the selected file and displays it in the text widget.
+        
+        Args:
+            event (tk.Event): The event triggered by selecting a file from the listbox.
+        """
         selected_file_index = self.file_listbox.curselection()
 
         if selected_file_index:
             selected_file_index = int(selected_file_index[0])
             selected_file = self.file_list[selected_file_index]
-            #print("Selected File:", selected_file)
             self.annotation_row = self.annotation_data[self.annotation_data["doc_name"] == selected_file]
             
             # Save some inforamtion for later extraction
@@ -359,14 +477,11 @@ class AnnotationViewer:
     
             # Print the length of the file content (last possible character index)
             max_end_index = len(file_content)
-            #print("Maximum End Index:", max_end_index)
 
             # Highlight annotations in a file
             for index, row in self.annotation_row.iterrows():    
                 start_index = row["concept_start"]  # Adjust for line numbering starting from 1
                 end_index = row["concept_end"]  # Adjust for line numbering starting from 1 and to include the character
-                #print("Start Index:", start_index)
-                #print("End Index:", end_index)
                 
                 # Find the sentence number and character count before, for the given span
                 start_sent_number, char_num_before_start = self.find_sentence_number(file_content, start_index)
@@ -390,17 +505,19 @@ class AnnotationViewer:
                 
                 # Print the length of the file content (last possible character index)
                 max_end_index = len(file_content)
-                #print("Maximum End Index:", max_end_index)
         
             self.annotation_text.config(state="disabled")
 
 def main():
+    parser = argparse.ArgumentParser(description="Run the Annotation Viewer Application.")
+    parser.add_argument("--output_data", type=str, help="Path to the output directory containing output files.")
+    parser.add_argument("--input_dir", type=str, help="Directory containing clinical notes.")
+    parser.add_argument("--csv", action="store_true", help="Flag to indicate whether CSV files should be processed.")
+    
+    args = parser.parse_args()
+
     root = tk.Tk()
-    #output_data=r"H:\Projects\Fred_MedSpacy\test8\Fred_MedSpacy_2024-04-19_11-20-51.xlsx"
-    app = AnnotationViewer(root, 
-                            r"C:/Users/M314694/Desktop/Application/cheack/2025-02-11_13-36-22/xlsx",
-                            CNST.INPUT_DIR,
-                            True)
+    app = AnnotationViewer(root, args.output_data, args.input_dir, args.csv)
     root.mainloop()
 
 if __name__ == "__main__":

@@ -2,6 +2,13 @@ import tkinter as tk
 from tkinter import ttk
 
 def center_window(window, width, height):
+    """Centers the window on the screen.
+
+    Args:
+        window (tk.Tk): The Tkinter window to be centered.
+        width (int): The width of the window.
+        height (int): The height of the window.
+    """
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
     x_coordinate = (screen_width / 2) - (width / 2)
@@ -9,6 +16,12 @@ def center_window(window, width, height):
     window.geometry("%dx%d+%d+%d" % (width, height, x_coordinate, y_coordinate))
 
 def create_main_window():
+    """Creates and displays the main window of the application with a label.
+
+    The main window has a title, and a label is displayed with information 
+    about the application. The window size is set to 600x300, and the window 
+    is centered on the screen.
+    """
     main_window = tk.Tk()
     main_window.title("medspacyV: A visual interface for the medspacy NLP pipeline")
     

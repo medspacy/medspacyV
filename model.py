@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Mar  4 21:03:33 2024
-
-@author: m199589
-"""
 
 import os
 import sys
@@ -11,6 +6,8 @@ import pandas as pd
 import time
 import re
 import json
+import logging
+import argparse
 #import spacy
 import medspacy
 from medspacy.sentence_splitting import PyRuSHSentencizer
@@ -26,13 +23,30 @@ from spacy.tokens import Span
 
 import helper.constants as CNST
 
+# Setting up logging
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 class Model:
+    """Handles loading and processing various data files such as sections, lexicons, and exclusion terms.
+    """
+
+    def __init__(self):
+        """setting logging
+        """
+        self.logger = logging.getLogger(__name__)
     
     def load_sections(self,sec_file, the_sectionizer):
+        """Load sections from the provided file and add them to the sectionizer.
+
+        Args:
+            sec_file (str): Path to the section file that contains section information.
+            the_sectionizer (object): The sectionizer object where the section rules will be added.
+        """
         with open(sec_file, 'r') as fh:
             for line in fh:
                 columns = line.strip().split('\t')
-                sec_id, synonym, source = columns[:3] # MDE (Mayo Data Explorer), JWF (Fred added) - ource
+                sec_id, synonym, source = columns[:3]
 
                 if sec_id == CNST.SECTION_ID:
                     continue 
@@ -41,33 +55,39 @@ class Model:
                 the_sectionizer.add(SectionRule.from_dict(entry)) # load one rule in a dictionary format
 
     def load_lexicon(self,lex_file):
+        """Load the inclusion lexicon from the provided file and return it as a pandas DataFrame.
+
+        Args:
+            lex_file (str): Path to the lexicon file (Excel format).
+
+        Returns:
+            pandas.DataFrame: A cleaned lexicon containing the concepts and their respective categories.
+        """
         result = dict()
         inclusion_lexicon = pd.read_excel(lex_file)
-        print("I read the the concept")
+        self.logger.info("Read the concept")
                 
         inclusion_lexicon = inclusion_lexicon.iloc[:, :5]
         inclusion_lexicon.columns = CNST.LEXICON_COLS
-        # TO DO HECK FOR EMPTY FIELDS
-        #cleen concep file
+
         inclusion_lexicon = inclusion_lexicon[~inclusion_lexicon[CNST.LEXICON_COLS[1]].isnull()]
         inclusion_lexicon = inclusion_lexicon[~inclusion_lexicon[CNST.LEXICON_COLS[2]].isnull()]
 
-        print(f"concepts number is {len(inclusion_lexicon)}")
+        self.logger.info(f"concepts number is {len(inclusion_lexicon)}")
         
 
         inclusion_lexicon = inclusion_lexicon.drop_duplicates()
-        # # Iterate over the rows of the DataFrame
-        # for index, row in inclusion_lexicon.iterrows():
-        #     # Construct the key using concept_category, concept_id, and case_sensitivity
-        #     key = (row['CONCEPT_CATEGORY'], row['CONCEPT_ID'], row['CASE_SENSITIVITY'])
-        #     # Assign the value to the key
-        #     result[key] = row['TERM_OR_REGEX']
-
-        # # Print the resulting dictionary
-        # print(result)
         return inclusion_lexicon
 
     def load_excl_terms(self,excl_file):
+        """Load the exclusion terms from the provided file and return them as a set.
+
+        Args:
+            excl_file (str): Path to the exclusion terms file.
+
+        Returns:
+            set: A set of exclusion terms in lowercase.
+        """
         result = set()
         with open(excl_file, 'r') as fh:
             for line in fh:
@@ -77,6 +97,15 @@ class Model:
         return result
 
     def load_concept_rules(self, incl_lexicon, excl_lexicon=None):
+        """Generate a list of concept rules from the inclusion lexicon and optional exclusion lexicon.
+
+        Args:
+            incl_lexicon (pandas.DataFrame): The inclusion lexicon containing terms and categories.
+            excl_lexicon (set, optional): The exclusion lexicon containing terms to exclude. Defaults to None.
+
+        Returns:
+            list: A list of concept rules generated from the lexicons.
+        """
         ''' ref. https://github.com/medspacy/target_matcher '''
         the_rules = list()
         # Register a new custom attribute to store the rare disease IDs
@@ -105,56 +134,23 @@ class Model:
                                 attributes = id_attr)
             the_rules.append(rule)
 
-        return (the_rules)            
-        # for (concept_category, concept_id, case_sensitive) in incl_lexicon.keys():
-        #     for term in incl_lexicon[(concept_category, concept_id, case_sensitive)]:
-        #         term = term.replace('\t', ' ') # the TAB thing is OHNLP format
-        #         if term.lower() in excl_lexicon:
-        #             continue # skip if in the exclusion list
-        #         term = '\\b(?:' + term + ')\\b'
-        #         regex_pattern = fr'(?i){term}' # defaul to insensitive
-        #         if case_sensitive == 'CaseSen':
-        #             regex_pattern = fr'{term}'
-        #         id_attr = {'concept_id': concept_id}
-        #         rule = TargetRule(literal=term, category=concept_category, pattern=regex_pattern, attributes=id_attr)
-        #         #tokens = term.split(' ')
-        #         #token_patterns = [{"LOWER": token} for token in tokens]
-        #         #rule = TargetRule(literal=term, category=concept_category, pattern=token_patterns, attributes=id_attr)
-        #         the_rules.append(rule)
-        # return the_rules
-        # print(type(incl_lexicon))
-        # for index , row in incl_lexicon.iterrows():
-        #     # Prepend each character in term with case-insensitivity flag if term is a regex
-        #     #pattern_str = 
-        #     #print(pattern_str)
-        #     #print(row)
-        #     norm = row[CNST.LEXICON_COLS[1]]
-        #     term = row[CNST.LEXICON_COLS[2]]
-        #     id_attr = {'concept_id': row[CNST.LEXICON_COLS[0]]}
-        #     regex = row[CNST.LEXICON_COLS[4]]
-        #     case_sensitive = row[CNST.LEXICON_COLS[3]]
-            
-        #     # Use a regular expression to keep only letters becasue the logic wont work if user put somethin like Flu_diagnosis
-        #     norm = re.sub(CNST.REGEX_LETTERS, '', norm)
-            
-        #     case_sensitive = True if case_sensitive == "YES" else False
-                
-        #     regex = True if regex == "YES" else False  
-                        
-                                
-        #     if excl_lexicon and term.lower() in excl_lexicon:
-        #         continue # skip if in the exclusion list   
-        
-        #     rule = self.generate_target_rules(norm, term, id_attr, regex, case_sensitive)
-            
-        #     the_rules.append(rule)
-        # return(the_rules)
+        return (the_rules)
 
     def generate_target_rules(self, norm, term, id_attr, regex, case_sensitive):
+        """Generate target rules for NLP processing based on provided parameters.
+
+        Args:
+            norm (str): The normalized concept or category.
+            term (str): The term or phrase to match in the text.
+            id_attr (dict): Dictionary containing concept ID attributes.
+            regex (bool): Whether to use regular expressions for pattern matching.
+            case_sensitive (bool): Whether the matching should be case-sensitive.
+
+        Returns:
+            TargetRule: A constructed target rule for use in the NLP pipeline.
+        """
         if case_sensitive:
             if regex: 
-                    #tokens =  term
-                # tokens =  term.split(' ')
                 regex_pattern = [{"TEXT":{"REGEX": term}}]
                 rule=TargetRule(literal=term, category=norm,pattern=regex_pattern, attributes=id_attr)
             else:    
@@ -163,8 +159,7 @@ class Model:
                 rule = TargetRule(literal=term, category=norm, pattern=token_patterns, attributes=id_attr)                    
         else:
             if regex:
-                # tokens =  term.split(' ')
-                regex_pattern = [{"TEXT":{"REGEX": term}}] # defaul to insensitive 
+                regex_pattern = [{"TEXT":{"REGEX": term}}] # default to insensitive 
                 rule = TargetRule(literal=term, category=norm, pattern=regex_pattern, attributes=id_attr)
             else:
                 tokens =  term.split(' ')
@@ -173,8 +168,26 @@ class Model:
         return rule
 
     def process_notes_on_disk(self,the_pipeline, the_input_path, tho_output_path,project_path_resources, inclusion_concepts, project_path, csv_file_chk, progress_callback=None):
-        print(" I am in process notes on disk")
-        print(f"the_input_path, tho_output_path,project_path_resources,  inclusion_concepts, project_path, {the_input_path}, {tho_output_path},{project_path_resources},  {inclusion_concepts}, {project_path}\n")
+        """Process notes stored on disk, either in CSV or text files, and extract entities using the NLP pipeline.
+
+        Args:
+            the_pipeline (object): The NLP pipeline used to process the notes.
+            the_input_path (str): Path to the input directory containing the notes.
+            tho_output_path (str): Path to the output directory where results will be saved.
+            project_path_resources (str): Path to the project resources.
+            inclusion_concepts (pandas.DataFrame): DataFrame containing the inclusion concepts for entity extraction.
+            project_path (str): Path to the project.
+            csv_file_chk (bool): Flag to indicate whether CSV files are being processed.
+            progress_callback (function, optional): Callback function to update the progress. Defaults to None.
+
+        Raises:
+            ValueError: If no CSV files are found in the directory.
+        
+        Returns:
+            str: The path to the folder containing the output files.
+        """
+        self.logger.info("In process notes on disk")
+        self.logger.info(f"the_input_path, tho_output_path,project_path_resources,  inclusion_concepts, project_path, {the_input_path}, {tho_output_path},{project_path_resources},  {inclusion_concepts}, {project_path}\n")
 
         the_input_path = the_input_path.replace("\\", "/")
         tho_output_path = tho_output_path.replace("\\", "/")
@@ -188,14 +201,14 @@ class Model:
             csv_files = [f for f in os.listdir(the_input_path) if f.endswith('.csv')]
             if not csv_files:
                 raise ValueError("No CSV files found in the directory.")
-            print(f"Processing the CSV file input...")
+            self.logger.info(f"Processing the CSV file input...")
 
             total_texts = sum(len(pd.read_csv(os.path.join(the_input_path, file))) for file in csv_files)
             
             for csv_file in csv_files:
                 csv_path = os.path.join(the_input_path, csv_file)
                 csv_path = os.path.normpath(csv_path)
-                print(f"Processing the file: {csv_path}")
+                self.logger.info(f"Processing the file: {csv_path}")
                 input_csv_file = pd.read_csv(csv_path)
 
                 # making sure that the required columns exist
@@ -238,7 +251,7 @@ class Model:
 
                         for el in end_columns:
                             result_entry.update({el: row[el]})
-                        # print(result_entry)
+
                         results.append(result_entry)
 
                     files_processed += 1
@@ -249,12 +262,12 @@ class Model:
                             progress_percent = (files_processed / total_texts) * 100
                             progress_callback(progress_percent, f"{files_processed}/{total_texts}")
                         else:
-                            print(f"Processed : {(files_processed / total_texts) * 100}% of files")
+                            self.logger.info(f"Processed : {(files_processed / total_texts) * 100}% of files")
                     else:
-                        print("No files to process.")
+                        self.logger.info("No files to process.")
         else:
             file_flag = "text"
-            print(f"Processing the Text files input...")
+            self.logger.info(f"Processing the Text files input...")
             files = os.listdir(the_input_path)
 
             total_files = 0
@@ -266,12 +279,12 @@ class Model:
                 if not f.endswith('.txt'):
                     continue
                 note_txt = None
-                print("  I read the files\n")
+
                 with open(os.path.join(the_input_path, f),  'r', encoding='utf-8') as fh:
                     try:
                         note_txt = fh.read()
                     except Exception as e:
-                        print(f"The program was not able to process the following file:{f} with errror: {e}")
+                        self.logger.error(f"The program was not able to process the following file:{f} with errror: {e}")
                         continue
                 
                 if not note_txt:
@@ -279,42 +292,22 @@ class Model:
                     continue
                 doc = the_pipeline(note_txt)
                 for ent in doc.ents:
-                    #print("************ent")
-                    #print(dir(ent))
-                    # if ent.label_ not in inclusion_concepts:
-                    #     continue
-                    #sent_obj = ent.sent
-                    #sent_str_newline_replaced = str(sent_obj).replace('\n', ' ')
-                    #print(f + '\t' + str(ent.label_) + '\t' + str(ent._.concept_id) + '\t' + str(ent.start)+'-'+str(ent.end) + '\t' + str(ent) + '\t' + str(sent_obj.start)+'-'+str(sent_obj.end) + '\t' + sent_str_newline_replaced + '\t' + str(ent._.section_category) + '\t' + str(ent._.section_title) + '\t' + str(ent._.is_negated) + '\t' + str(ent._.is_uncertain) + '\t' + str(ent._.is_historical) + '\t' + str(ent._.is_hypothetical) + '\t' + str(ent._.is_family))
-                                    # Add information to results
-                    results.append({
-                                        "doc_name": f,
-                                        "concept":ent.label_,
-                                    #  "context_id":ent._.concept_id,
-                                        #"concept": norm,
-                                        "matched_text": ent.text,
-                #                        "start1": ent.start,
-                                        "concept_start": ent.start_char,  # is prefered
-                #                        "end1:": ent.end,
-                                        # "ent": ent,
-                                        "concept_end": ent.end_char,
-                                        "sentence": ent.sent.text,
-                                        "sentence_start": ent.sent.start_char,
-                                        "sentence_end" : ent.sent.end_char,
-                #                        "sentence_number":ent.sentence_number,
-                                        "section_id": "" if pd.isna(ent._.section_category) else ent._.section_category,
-                                        "matched_section_header" : ent._.section_title,
-                                        "is_negated": ent._.is_negated,
-                                        "is_family": ent._.is_family,
-                                        "is_uncertain": ent._.is_uncertain,
-            #                           "section_pattern": ent._.section_patterns,
-                                        "is_historical": ent._.is_historical,
-                                        "is_hypothetical": ent._.is_hypothetical,
-                                        #"is_POSSIBLE_EXISTENCE": is_POSSIBLE_EXISTENCE
-                                    #  "Experiencer": experiencer
-        
-                                    
-                                    })
+                    
+                    results.append({"doc_name": f,
+                                    "concept":ent.label_,
+                                    "matched_text": ent.text,
+                                    "concept_start": ent.start_char,
+                                    "concept_end": ent.end_char,
+                                    "sentence": ent.sent.text,
+                                    "sentence_start": ent.sent.start_char,
+                                    "sentence_end" : ent.sent.end_char,
+                                    "section_id": "" if pd.isna(ent._.section_category) else ent._.section_category,
+                                    "matched_section_header" : ent._.section_title,
+                                    "is_negated": ent._.is_negated,
+                                    "is_family": ent._.is_family,
+                                    "is_uncertain": ent._.is_uncertain,
+                                    "is_historical": ent._.is_historical,
+                                    "is_hypothetical": ent._.is_hypothetical})
                 files_processed += 1
 
                 if total_files > 0:
@@ -324,9 +317,9 @@ class Model:
                         progress_percent = (files_processed / total_files) * 100
                         progress_callback(progress_percent, f"{files_processed}/{total_files}")
                     else:
-                        print(f"Processed : {(files_processed / total_files) * 100}% of files")
+                        self.logger.info(f"Processed : {(files_processed / total_files) * 100}% of files")
                 else:
-                    print("No files to process.")
+                    self.logger.info("No files to process.")
 
                 
                 
@@ -334,13 +327,10 @@ class Model:
         if df.empty:
             return "EMPTY"
         else:
-            #project_path=os.path.dirname(os.path.dirname(project_path_resources))
-            # Split the path and get the second-to-last component
+
             project_name = os.path.basename(project_path)
-            print(f" results is ready {len(df)}")
-            # print("project_name {project_name}")
             
-            #Get the current date and time
+            # Get the current date and time
             current_datetime = time.localtime()
             
             # Format the current date and time as desired
@@ -364,101 +354,93 @@ class Model:
                 chunk_df.to_csv(f"{csv_folder}/{output_file_name_csv}", index=False, sep='|')
                 chunk_df.to_excel(f"{xlsx_folder}/{output_file_name_excel}", index=False)
                 output_files.append(os.path.join(xlsx_folder, output_file_name_excel))
+            
             return xlsx_folder
 
     def perform_nlp(self,input_dir, output_dir, project_path_resources, project_path, input_mode, csv_file_chk, progress_callback=None):
-        # Redirect stdout to a log file
-        # log_file = "debug.log"
-    
-        old_stdout = sys.stdout  # Save the original stdout
-        # log_file= open("debug.log", "w")  # Open the log file in append mode            
-        #logging.basicConfig(level=logging.ERROR)
-        #sys.stdout = log_file
-        print(f"input_dir, output_dir,project_path_resources, project_path, input_mode,{input_dir}, {output_dir},{project_path_resources}, {project_path}, {input_mode}\n")
+        """Performs the NLP pipeline on the input files or directories.
 
-        #config_json=project_path_resources+'/'+config_json
-        # configuration = None
-        # with open(config_json, 'r') as fh:
-        #     configuration = json.load(fh)
-        #     #print(configuration['resources'])
-        # resources = configuration['resources'] # loaded the config info
+        Args:
+            input_dir (str): The directory containing the input files.
+            output_dir (str): The directory to save the output files.
+            project_path_resources (str): Path to the project resources.
+            project_path (str): Path to the project.
+            input_mode (str): The mode of input ('files' for processing files).
+            csv_file_chk (bool): Flag to check if CSV files should be processed.
+            progress_callback (function, optional): Callback function to update the progress. Defaults to None.
+
+        Returns:
+            str: The path to the output folder containing processed files.
+        """
+    
+        old_stdout = sys.stdout
+        self.logger.info(f"input_dir, output_dir,project_path_resources, project_path, input_mode,{input_dir}, {output_dir},{project_path_resources}, {project_path}, {input_mode}\n")
 
         nlp, inclusion_lexicon = self.init_nlp_pipeline(project_path_resources)
         
         if input_mode == 'files':
             try:
-                print("I'm going to files on dist\d")
+                self.logger.info("I'm going to files on dist\d")
                 entity_types_to_print = ['RARE_DZ'] # customize for use case!
                 output_file=self.process_notes_on_disk(nlp, input_dir,output_dir, project_path_resources, inclusion_lexicon, project_path, csv_file_chk, progress_callback)  
             
-                print("NLP process finished.\n")
-                print(f"outputfile {output_file}")
-                #sys.stdout=old_stdout
-                # log_file.close()
+                self.logger.info("NLP process finished.\n")
+                self.logger.info(f"outputfile {output_file}")
+
                 return(output_file)
             except Exception as e:
-                print(f"Error procesing files on disk", {e})
-                #sys.stdout=old_stdout
-                # log_file.close()
+                self.logger.error(f"Error procesing files on disk", {e})
         else: 
-            print(f"input_file is not file {input_mode}")
-            #sys.stdout=old_stdout
-            # log_file.close()
+            self.logger.error(f"input_file is not file {input_mode}")
     
     def init_nlp_pipeline(self, project_path_resources):
+        """Initializes the NLP pipeline by adding components like tokenizers, sentence splitters, and sectionizers.
+
+        Args:
+            project_path_resources (str): Path to the project resources containing custom configuration files.
+
+        Returns:
+            tuple: A tuple containing the initialized NLP pipeline and the inclusion lexicon.
+        """
         # Create Pipeline
         nlp = medspacy.load(medspacy_enable=['medspacy_tokenizer']) # add the tokenizer first; should be just symbolic as it's loaded by default.
-        print(" I loaded medspacy tokenizer\n")
+        self.logger.info("Loaded medspacy tokenizer\n")
 
         # ADD Sentenizer
-        #if 'medspacy_pyrush' in resources and 'split_rules' in resources['medspacy_pyrush']:
         try:
-            #path_of_resource = resources['medspacy_pyrush']['split_rules']
+            # path_of_resource = resources['medspacy_pyrush']['split_rules']
             path_of_resource=f"{project_path_resources}/{CNST.RESOURCE_SENTENCE_RULE}"
             sentencizer = nlp.add_pipe('medspacy_pyrush', config={'rules_path': path_of_resource})
-            #print(sentencizer.rules_path)
         except Exception as e:
-            print(f"Exception adding custom sentencizer: {e}")
-            sentencizer = nlp.add_pipe('medspacy_pyrush') # load the default
-        
-            # ADD Sectionizer
-        #if 'medspacy_sectionizer' in resources and 'header_terms' in resources['medspacy_sectionizer']:
+            self.logger.error(f"Exception adding custom sentencizer: {e}")
+            sentencizer = nlp.add_pipe('medspacy_pyrush') 
+
+        # ADD Sectionizer
         try:    
-            #path_of_resource = resources['medspacy_sectionizer']['header_terms']
             path_of_resource=f"{project_path_resources}/{CNST.RESOURCE_SECTIONS_RULE}"
             
-            sectionizer = nlp.add_pipe('medspacy_sectionizer',
-                            config={'rules': None, # init with empty section rules
-                                    'require_start_line': True}
-                                    , # require the header to be at begin of a line
-                                #   'phrase_matcher_attr': 'TEXT'} # require exact match of header text
-                    )
+            sectionizer = nlp.add_pipe('medspacy_sectionizer', config={'rules': None,
+                                                                        'require_start_line': True})
             self.load_sections(path_of_resource, sectionizer)
         except Exception as e:
-            print(f"Exception adding custom sectionizer: {e}")
+            self.logger.error(f"Exception adding custom sectionizer: {e}")
             sectionizer = nlp.add_pipe('medspacy_sectionizer') # load the default           
     
         concept_matcher = nlp.add_pipe('medspacy_target_matcher') # add an empty matcher
         concept_rules = list()
         
         # Load concepts and exclusion terms
-        try: #if 'medspacy_target_matcher' in resources:
+        try:
             
-            #matcher_resources = resources['medspacy_target_matcher']
             inclusion_lexicon = None
             exclusion_lexicon = None
-            #if 'concept_terms' in matcher_resources:
             path_of_resource = f"{project_path_resources}/{CNST.RESOURCE_CONCEPTS}"
-                #path_of_resource =matcher_resources['concept_terms']
-                #
+
             inclusion_lexicon = self.load_lexicon(path_of_resource)
-            #if 'exclusion_terms' in matcher_resources:
-                #path_of_resource = matcher_resources['exclusion_terms']
-            # path_of_resource =  f"{project_path_resources}/exclude_terms.txt"     
-            # exclusion_lexicon = self.load_excl_terms(path_of_resource)
+
             concept_rules = self.load_concept_rules(inclusion_lexicon, exclusion_lexicon)
         except Exception as e:
-            print(f"Exception loading concept matcher rules: {e}")
+            self.logger.error(f"Exception loading concept matcher rules: {e}")
 
         concept_matcher.add(concept_rules) # fill attach the rules to the matcher
 
@@ -468,7 +450,6 @@ class Model:
         try:
             # Attempting to use a custom path for context rules
             path_of_resource = f"{project_path_resources}/{CNST.RESOURCE_CONTEXT_RULES}"
-            #print(f"Loading custom context rules from: {path_of_resource}")
             
             # Loading custom rules from the JSON file
             rules = ConTextRule.from_json(path_of_resource)
@@ -476,7 +457,7 @@ class Model:
             context_classifier.add(rules)
             
         except Exception as e:
-            print(f"Exception loading custom context rules: {e}")
+            self.logger.error(f"Exception loading custom context rules: {e}")
             # Fallback to default context rules
             context_classifier = ConText(nlp, rules='default')
 
@@ -484,20 +465,29 @@ class Model:
 
 # Example usage of the Model class
 if __name__ == "__main__":
-    model = Model()
-    # config_json = "H:/Projects/Fred_Spacy/medspacyV_config_V3.json"
-    # input_mode = "files" # "files" or "bigquery"
-    # input_dir = "C:/CNPA2/sample_notes" # the input path or a query for the notes
-    # output_dir="C:/CNPA2/test7"
-    # #config_json = "H:/Projects/Fred_Spacy/medspacyV_config_V3.json"
-    
-    # project_resources_dir="C:/CNPA2/test7/resources"
-    # project_path="C:/CNPA2/test7"'
 
+    # argparse to accept command-line arguments
+    parser = argparse.ArgumentParser(description="Run the NLP processing with specified directories and project settings.")
     
-    output_file=model.perform_nlp(CNST.INPUT_DIR,
-                                  CNST.OUTPUT_DIR, 
-                                  CNST.PROJECT_RESOURCES_DIR, 
-                                  CNST.PROJECT_PATH, CNST.INPUT_MODE, True)
+    # command-line arguments
+    parser.add_argument('--input_dir', type=str, help="Directory containing input files (default from CNST).")
+    parser.add_argument('--output_dir', type=str, help="Directory to save output files (default from CNST).")
+    parser.add_argument('--project_resources_dir', type=str, default=CNST.PROJECT_RESOURCES_DIR, help="Path to the project resources directory (default from CNST).")
+    parser.add_argument('--project_path', type=str, help="Path to the project directory (default from CNST).")
+    parser.add_argument('--input_mode', type=str, default=CNST.INPUT_MODE, choices=['files', 'csv'], help="Input mode (either 'files' or 'csv').")
+    parser.add_argument('--csv_file_chk', type=bool, default=True, help="Flag to check for CSV files in input.")
+    
+    args = parser.parse_args()
+
+    model = Model()
+    
+    output_file = model.perform_nlp(args.input_dir,
+                                     args.output_dir, 
+                                     args.project_resources_dir, 
+                                     args.project_path, 
+                                     args.input_mode, 
+                                     args.csv_file_chk)
     print(output_file)
-    
+
+if __name__ == "__main__":
+    main()

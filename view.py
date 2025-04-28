@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Apr 30 11:01:56 2024
-
-@author: m199589
-"""
 
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import pandas as pd
 import os
+import logging
 import base64
 from PIL import Image, ImageTk
 from io import BytesIO
@@ -18,8 +14,24 @@ from datetime import datetime
 from helper.annotations import AnnotationViewer
 import helper.constants as CNST
 
+# Setting up logging
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 class View(tk.Tk):
+    """Creates and manages the main GUI window for the medspacyV application.
+
+    This class is responsible for setting up and displaying the user interface, 
+    including tabs for configuring the NLP pipeline, entering concepts, adjusting 
+    advanced settings, and selecting directories for input/output. It also manages 
+    events and actions related to the UI components.
+    
+    Args:
+        tk (module): The tkinter module for creating GUI elements.
+    """
     def __init__(self):
+        """Initializes the View object and sets up the window and tabs.
+        """
         super().__init__()
         self.title("medspacyV: A visual interface for the medspacy NLP pipeline")
         self.geometry("1200x600")
@@ -45,7 +57,15 @@ class View(tk.Tk):
         self.create_tab1_contents()
         self.create_tab3()
 
+        self.logger = logging.getLogger(__name__)
+
     def create_tab1_contents(self):
+        """Creates the contents of the first tab (Configure and Run the Pipeline). 
+
+        This method sets up all the UI elements on the first tab, including project 
+        selection, concepts editing, advanced settings for sentence splitter, 
+        section detector, and negation detector, as well as input directory selection.
+        """
         # Adjust font size for labels and buttons
         font_size = 12
         
@@ -180,6 +200,11 @@ class View(tk.Tk):
         pass
 
     def initialize_logfile(self):
+        """Initializes the log file for the application.
+
+        This method checks if the log file exists, and if not, creates a new log file.
+        It writes an initial log entry stating that the file is for error tracking.
+        """
         open_directory = os.getcwd()
         initialdirectory = os.path.join(open_directory)
         initialdirectory=initialdirectory.replace('\\','/')
@@ -189,11 +214,23 @@ class View(tk.Tk):
                 f.write("Debug Log - Error Tracking - medspacyV\n\n")
 
     def log_error(self, error_type, error_message):
+        """Logs an error message to the log file with a timestamp.
+
+        Args:
+            error_type (str): A brief description of the error type.
+            error_message (str): Detailed message describing the error.
+        """
         with open(self.log_file_path, "a") as f:
             timestamp = datetime.now().strftime("%m-%d-%Y %H:%M:%S")
             f.write(f"[{timestamp}]\nError type: {error_type}\nError details: {error_message}\n\n")
 
     def create_tooltip(self, widget, text):
+        """Creates a tooltip that appears when the user hovers over a widget.
+
+        Args:
+            widget (tk.Widget): The widget to attach the tooltip to.
+            text (str): The text to display in the tooltip.
+        """
         tooltip = tk.Toplevel(widget)
         tooltip.withdraw()
         tooltip.overrideredirect(True) 
@@ -201,18 +238,33 @@ class View(tk.Tk):
         label.pack(ipadx=5, ipady=2)
 
         def enter(event):
+            """Displays the tooltip when the mouse enters the widget area.
+
+            Args:
+                event (tk.Event): The event that triggers the tooltip to appear.
+            """
             x = widget.winfo_rootx() + 20
             y = widget.winfo_rooty() + 20
             tooltip.geometry(f"+{x}+{y}")
             tooltip.deiconify()
 
         def leave(event):
+            """Hides the tooltip when the mouse leaves the widget area.
+
+            Args:
+                event (tk.Event): The event that triggers the tooltip to disappear.
+            """
             tooltip.withdraw()
 
         widget.bind("<Enter>", enter)
         widget.bind("<Leave>", leave)
 
     def toggle_review_button(self, *args):
+        """Toggles the state of the review button based on the checkbox.
+
+        Enables or disables the review button and the process notes button, 
+        depending on whether the 'use existing output' checkbox is selected.
+        """
         if self.use_existing_output.get():
             self.btn_review_annotation_resuls.config(state=tk.NORMAL)
             self.btn_process_notes.config(state=tk.DISABLED)
@@ -227,6 +279,11 @@ class View(tk.Tk):
                 self.output_dir_entry.delete(0, tk.END)
 
     def create_tab3(self):
+        """Creates the 'About' tab in the user interface.
+
+        This method sets up the content for the third tab, including displaying 
+        information about the medspacyV application, its origin, and purpose.
+        """
         # Create an empty row
         self.empty_row2 = tk.Label(self.tab3, text="      ")
         self.empty_row2.grid(column=0, row=0, sticky='w')
@@ -245,6 +302,12 @@ class View(tk.Tk):
 
     # Tab1 Commands
     def create_or_open_project(self):
+        """Opens a project directory or creates a new one.
+
+        This method allows the user to either select an existing project directory 
+        or create a new one. It also sets up necessary directories and files, 
+        such as creating a "resources" folder if it doesn't exist.
+        """
         # Get the directory where the main Python script is located
         script_directory = os.path.dirname(os.path.abspath(__file__))
         open_directory = os.getcwd()
@@ -278,6 +341,12 @@ class View(tk.Tk):
         self.output_dir_entry.insert(0, self.project_path)  # Set default value 
 
     def adjust_sent_tokenizer(self):
+        """Allows the user to edit the sentence tokenizer rules.
+
+        This method checks if the project resources directory exists, and if so, 
+        opens the sentence rule file using Notepad for editing. It logs an error 
+        if the project directory is not selected.
+        """
         if self.project_resources_dir == "":
             messagebox.showerror("Error", "Project directory not selected!")
             self.log_error("Issues with selecting directory", "Project directory not selected!")
@@ -288,6 +357,12 @@ class View(tk.Tk):
             subprocess.Popen(['notepad.exe', sent_rules_file], creationflags=subprocess.CREATE_NO_WINDOW)
 
     def adjust_sectionizer(self):
+        """Allows the user to edit the sectionizer rules.
+
+        This method checks if the project resources directory exists, and if so, 
+        opens the section rule file using Notepad for editing. If the file is not 
+        found, it logs the error and shows an error message.
+        """
         if not self.project_resources_dir:
             messagebox.showerror("Error", "Project directory not selected!")
             self.log_error("Issues with selecting directory", "Project directory not selected!")
@@ -301,6 +376,12 @@ class View(tk.Tk):
             self.log_error("Issues with resource files", f"I can't find {CNST.RESOURCE_CONTEXT_RULES} file in the project resources")
 
     def adjust_negation_rules(self):
+        """Allows the user to edit the negation detection rules.
+
+        This method checks if the project resources directory exists, and if so, 
+        opens the negation rule file using Notepad for editing. If the file is not 
+        found, it logs the error and shows an error message.
+        """
         if not self.project_resources_dir:
             messagebox.showerror("Error", "Project directory not selected!")
             self.log_error("Issues with selecting directory", "Project directory not selected!")
@@ -314,6 +395,11 @@ class View(tk.Tk):
             self.log_error("Issues with resource files", f"I can't find {CNST.RESOURCE_CONTEXT_RULES} file in the project resources")
 
     def enter_concepts(self):
+        """Allows the user to enter or edit the concepts file.
+
+        This method opens the concepts file in Excel. If the file doesn't exist, 
+        it creates a new one with the appropriate headers and opens it in Excel.
+        """
         if not self.project_resources_dir:
             messagebox.showerror("Error", "Project directory not selected!")
             self.log_error("Issues with selecting directory", "Project directory not selected!")
@@ -332,6 +418,11 @@ class View(tk.Tk):
         self.update_concept_label(concepts_file)
         
     def update_concept_label(self, concepts_file):
+        """Updates the label to display the path of the concepts file.
+
+        Args:
+            concepts_file (str): The path of the concepts file to display.
+        """
         # Remove the label if it already exists
         if hasattr(self, 'concept_label'):
             self.concept_label.destroy()
@@ -341,6 +432,12 @@ class View(tk.Tk):
         self.concept_label.grid(row=2, column=2, columnspan=6, sticky="w", padx=15, pady=5)    
 
     def update_rule_file_paths(self):
+        """Updates the labels to display the paths of various rule files.
+
+        This method checks if the required rule files exist in the project resources 
+        directory. It then updates the displayed paths, indicating whether the 
+        files are found or not.
+        """
         if not self.project_resources_dir:
             return
 
@@ -379,6 +476,10 @@ class View(tk.Tk):
         self.label_negation_rules_path.grid(row=6, column=2, columnspan=6, sticky="w", padx=15, pady=5)
                   
     def browse_input_directory(self):
+        """Allows the user to browse and select the input directory.
+
+        This method opens a directory selection dialog and updates the input directory entry with the selected directory.
+        """
         directory = filedialog.askdirectory()
         if directory:
             self.input_dir_entry.delete(0, tk.END)
@@ -386,6 +487,10 @@ class View(tk.Tk):
             self.input_dir = directory
 
     def browse_output_directory(self):
+        """Allows the user to browse and select the output directory.
+
+        This method opens a directory selection dialog and updates the output directory entry with the selected directory.
+        """
         directory = filedialog.askdirectory()
         if directory:
             self.output_dir_entry.delete(0, tk.END)
@@ -395,10 +500,19 @@ class View(tk.Tk):
             self.output_folder = ""
 
     def set_controller(self, controller):
+        """Sets the controller for the View.
+
+        Args:
+            controller (Controller): The controller object that handles interactions between the view and the model.
+        """
         self.controller = controller     
             
            
     def update_project_path_label(self):
+        """Updates the project path label with the selected project path.
+
+        This method updates the label that displays the current project path. It ensures that the project path is displayed in a formatted manner within the UI.
+        """
         # Update project_path_label with the selected project path
         if self.project_path:
             max_length = 90  # Define maximum length for displayed path
@@ -408,6 +522,17 @@ class View(tk.Tk):
             
 
     def process_notes(self):    
+        """Processes the clinical notes based on the selected project and resources.
+
+        This method performs the following tasks:
+        - Verifies the existence of necessary directories and files (input, output, project resources).
+        - Reads and processes the concepts file.
+        - Validates the input files (CSV or TXT) based on the user's settings.
+        - Calls the processing function in the controller.
+        - Displays messages and logs errors based on the processing results.
+
+        It also handles the creation and management of output directories and reports.
+        """
         if self.output_dir_initial:
             self.output_folder = ""
             self.output_dir_entry.delete(0, tk.END)
@@ -429,7 +554,7 @@ class View(tk.Tk):
 
         df = pd.read_excel(concepts_file)
         df.columns = df.columns.str.strip()
-        df=df.iloc[:, :5]
+        df = df.iloc[:, :5]
         df.columns=['CONCEPT_ID', 	'CONCEPT_CATEGORY',	'TERM_OR_REGEX','CASE_SENSITIVITY',"REGULAR_EXPRESSION"]
         
         df = df.dropna(subset=['CONCEPT_ID', 'CONCEPT_CATEGORY']).drop_duplicates()
@@ -494,11 +619,19 @@ class View(tk.Tk):
         self.output_dir_entry.insert(tk.END, self.output_folder)
 
     def display_output_tab2(self):
+        """Displays the output results in a new window.
+
+        This method performs the following tasks:
+        - Verifies if input and output directories contain the required files.
+        - If the "Use existing output" option is selected, it validates the output files in the specified folder.
+        - Checks for missing input-output file correspondences and reports errors.
+        - Displays the processed results in a new window using the `AnnotationViewer` class.
+        """
         try:
             new_window = None
 
             if not self.input_dir:
-                print(self.input_dir)
+                self.logger.info(self.input_dir)
                 messagebox.showerror("Error", "Please select an input directory first.")
                 self.log_error("Issues with selecting the directory","Please select an input directory first.")
                 return
@@ -509,7 +642,7 @@ class View(tk.Tk):
                 return
             
             if not self.output_dir:
-                print(self.output_dir)
+                self.logger.info(self.output_dir)
                 messagebox.showerror("Error", "Please select an output directory first.")
                 self.log_error("Issues with selecting the directory","Please select an output directory first.")
                 return
@@ -668,11 +801,25 @@ class View(tk.Tk):
             messagebox.showerror("Error", f"An error occurred while displaying the output: {str(e)}")
 
     def reset_progress(self):
+        """Resets the progress bar to 0 and updates the progress label.
+
+        This method is typically used to reset the progress bar and label 
+        to their initial state before starting a new operation or process.
+        """
         self.progress['value'] = 0
         self.progress_label.config(text="0%")
         self.update_idletasks()
     
     def update_progress(self, value, prog):
+        """Updates the progress bar and label with the current progress.
+
+        Args:
+            value (float): The current value of the progress (0 to 100).
+            prog (str): A description or label to be displayed alongside the progress percentage.
+        
+        This method is typically used to update the progress bar and the associated 
+        label as the process progresses, showing the current value and progress description.
+        """
         self.progress['value'] = value
         self.progress_label.config(text=f"{prog} : {int(value)}%")
         self.update()
