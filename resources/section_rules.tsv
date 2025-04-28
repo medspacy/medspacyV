@@ -122,6 +122,7 @@ physical_exam	PE	medspaCy
 physical_exam	PHYSICAL EXAM	medspaCy	
 physical_exam	PHYSICAL EXAMINATION	medspaCy	
 physical_exam	Physical Exam	medspaCy	
+physical_exam	Physical Examination	user	
 physical_exam	Physical exam	medspaCy	
 problem_list	Active Problem List	medspaCy	
 problem_list	Current Problems	medspaCy	
@@ -131,6 +132,7 @@ problem_list	Problem List	medspaCy
 hospital_course	PROCEDURE NOTE	medspaCy	
 hospital_course	PROCEDURE AND FINDING	medspaCy	
 reason_for_examination	REASON FOR THIS EXAMINATION	medspaCy	
+review_of_systems	Review of Systems	user	
 signature	Electronic Signature	medspaCy	
 signature	Signed electronically by	medspaCy	
 social_history	PMHSx	medspaCy	

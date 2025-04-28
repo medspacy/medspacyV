@@ -42,13 +42,6 @@
 # \) A right parentheses symbol
 #
 #  A wildcard followed by a "+": 1 or more characters that match the wildcard
-
-# Mayo custom rules as follows
-\n+•\s+(\C)	0	stbegin
-\n(#\d+\s	0	stbegin
-(\n)#\d+\s	2	stend
-(FMH)\n	2	stend
-
 \b(\C	0	stbegin
 \b(\d	0	stbegin
 \b\s+(\C	0	stbegin
@@ -172,6 +165,8 @@
 !\s+(\C)\c	0	stbegin
 !\s+(\d	0	stbegin
 
+
+
 #start with time
 \n\n(\d):\d\s	0	stbegin
 \n\n(\d):\d\d\s	0	stbegin
@@ -223,6 +218,8 @@
 \c:\n+(\a	0	stbegin
 \s+\s+(\d\)\s+\C	0	stbegin
 \s+\s+(\d\d\)\s+\C	0	stbegin
+\a)\e	2	stend
+\a)\w+\e	2	stend
 \n)                                    \d\d\)	2	stend
 
 \c:\n+(\d. 	0	stbegin
@@ -822,6 +819,9 @@ Instructions:\n+(\a	0	stbegin
 \sand)\s+\n+\c	3	stend
 \sand)\n+\C	3	stend
 \sand)\n+\c	3	stend
+
+\s\a\.\w+and	3	stend
+\.\a\.\w+and	3	stend
 
 
 
