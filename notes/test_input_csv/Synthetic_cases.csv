@@ -1,0 +1,117 @@
+doc_name,note_text,patient_age,patient_gender
+Synthetic_PMID_39756949,"Patient: Jane Foster
+Age: 53
+Gender: Female
+
+Preoperative Diagnosis:
+Classical trigeminal neuralgia affecting the maxillary division of the right trigeminal nerve.
+
+Postoperative Diagnosis:
+Same
+
+Procedure:
+Retrosigmoid craniotomy with drilling of the suprameatal tubercle and transposition of compressed vein.
+
+Surgeon: Dr. Ian McDrill, MD
+
+Assistant: Emily Johnson, MBA
+
+Anesthesia: General anesthesia
+
+Indications:
+The patient presented with classical trigeminal neuralgia affecting the maxillary division of the right trigeminal nerve. MRI and CT revealed a bony prominence, the suprameatal tubercle, above the opening of the internal acoustic meatus. MRI showed a thick venous flow void interposed between the suprameatal tubercle and trigeminal nerve.
+
+Procedure Details:
+1. The patient was placed in the supine position with the head turned to the left.
+2. A retrosigmoid craniotomy was performed to access the trigeminal nerve.
+3. Upon exposure, the suprameatal tubercle was identified as restricting the transposition of the compressed vein.
+4. The bony prominence was drilled to allow for the transposition of the vein.
+5. The compressed vein was successfully transposed after drilling the prominence.
+6. Hemostasis was achieved, and the surgical site was closed in layers.
+
+Findings:
+The suprameatal tubercle was restricting the transposition of the compressed vein. Drilling the prominence allowed for successful transposition of the vein.
+
+Complications:
+None
+
+Postoperative Condition:
+The patient's symptoms resolved completely following the procedure.
+
+Recommendations:
+- Monitor for any signs of recurrence of trigeminal neuralgia.
+- Follow-up in 1 month for postoperative evaluation.
+
+Signed:
+Dr. Ian McDrill, MD
+Neurosurgeon",53,F
+Synthetic_PMID_39825451,"Patient: Mr. Haoren Zeng
+Age: 77
+Gender: Male
+
+Chief Complaint:
+Severe craniofacial postherpetic neuralgia.
+
+History of Present Illness:
+The patient is a 77-year-old male with a history of severe craniofacial postherpetic neuralgia. He underwent pulsed radiofrequency treatment of the trigeminal ganglion twice in our department. During the first procedure, a radiofrequency needle was successfully placed through the foramen ovale under local anesthesia and intravenous sedation with dexmedetomidine. The patient reported approximately 50% pain reduction postoperatively. The second procedure was performed one week later, but the administration of sedative agents was suspended due to hemodynamic instability. Consequently, the patient exhibited hypersensitivity to the percutaneous operation under local anesthesia, and the needle could not be placed inside Meckel's cave due to uncontrollable breakthrough pain.
+
+Physical Examination:
+General: Hemodynamically stable during the first procedure, unstable during the second procedure.
+Neurologic: Hypersensitivity noted during the second procedure.
+
+Medications:
+Oxycodone: 10-20 mg, every 12 hours
+Pregabalin: 75 mg, two times a day
+
+Follow-Up:
+At the last follow-up, 1.5 years after discharge, the patient continued to require oral medication for pain control.
+
+Assessment:
+The patient has severe craniofacial postherpetic neuralgia with partial pain relief following pulsed radiofrequency treatment of the trigeminal ganglion. Hemodynamic instability during the second procedure limited the effectiveness of the treatment.
+
+Plan:
+Continue current pain management regimen with oxycodone and pregabalin.
+Monitor for any changes in pain levels or medication side effects.
+Consider alternative pain management strategies if current regimen becomes ineffective.
+
+Signed:
+Dr. Jane Smith, MD
+Pain Management Department",77,M
+Synthetic_PMID_39873596,"Patient: John Doe
+Age: 38
+Gender: Male
+
+Chief Complaint:
+Left-sided facial pain for 5 weeks.
+
+History of Present Illness:
+The patient is a 38-year-old previously healthy male who presented with left-sided facial pain over the past 5 weeks. The pain was first noticed while washing his face and applying pressure. It is described as shock-like, sharp, and shooting, radiating along the left cheek and temple. Initially, the episodes lasted 1-2 seconds and occurred two to three times per day, sometimes spontaneously. The pain has progressively increased in severity and frequency. Mild progressive left facial weakness developed a few weeks after the initial symptoms.
+
+Physical Examination:
+General: Afebrile, normal vital signs.
+HEENT: Reproducible pain in the distribution of the maxillary division of the trigeminal nerve (V2). Normal motor and sensory function.
+Dental: Recent routine dental examination showed healthy teeth and gums. No history of dental procedures or trauma.
+Neurologic: No abnormalities detected.
+Other Systems: No abnormalities detected.
+
+Laboratory Findings:
+Complete blood count: Normal
+Metabolic panel with electrolytes: Normal
+Kidney and liver function tests: Normal
+C-reactive protein: Normal
+
+Imaging:
+Initial MRI of the temporal bones performed at an outside hospital.
+Follow-up MRI and CT performed approximately 3 months after initial imaging (Figs 1-4).
+
+Assessment:
+The clinical presentation and examination findings are consistent with trigeminal neuralgia.
+
+Plan:
+Start treatment with carbamazepine for trigeminal neuralgia. The patient has shown modest improvement in symptoms.
+Continue follow-up with neurologic and otolaryngologic evaluations.
+Review imaging results and adjust treatment plan as necessary.
+
+Signed:
+Dr. Jane Smith, MD
+Neurology Department",38,M

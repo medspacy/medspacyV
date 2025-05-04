@@ -1,0 +1,46 @@
+Patient: Jane Foster
+Age: 53
+Gender: Female
+
+Preoperative Diagnosis:
+Classical trigeminal neuralgia affecting the maxillary division of the right trigeminal nerve.
+
+Postoperative Diagnosis:
+Same
+
+Procedure:
+Retrosigmoid craniotomy with drilling of the suprameatal tubercle and transposition of compressed vein.
+
+Surgeon: Dr. Ian McDrill, MD
+
+Assistant: Emily Johnson, MBA
+
+Anesthesia: General anesthesia
+
+Indications:
+The patient presented with classical trigeminal neuralgia affecting the maxillary division of the right trigeminal nerve. MRI and CT revealed a bony prominence, the suprameatal tubercle, above the opening of the internal acoustic meatus. MRI showed a thick venous flow void interposed between the suprameatal tubercle and trigeminal nerve.
+
+Procedure Details:
+1. The patient was placed in the supine position with the head turned to the left.
+2. A retrosigmoid craniotomy was performed to access the trigeminal nerve.
+3. Upon exposure, the suprameatal tubercle was identified as restricting the transposition of the compressed vein.
+4. The bony prominence was drilled to allow for the transposition of the vein.
+5. The compressed vein was successfully transposed after drilling the prominence.
+6. Hemostasis was achieved, and the surgical site was closed in layers.
+
+Findings:
+The suprameatal tubercle was restricting the transposition of the compressed vein. Drilling the prominence allowed for successful transposition of the vein.
+
+Complications:
+None
+
+Postoperative Condition:
+The patient's symptoms resolved completely following the procedure.
+
+Recommendations:
+- Monitor for any signs of recurrence of trigeminal neuralgia.
+- Follow-up in 1 month for postoperative evaluation.
+
+Signed:
+Dr. Ian McDrill, MD
+Neurosurgeon
