@@ -15,14 +15,14 @@ LEXICON_COLS = ['CONCEPT_ID', 'CONCEPT_CATEGORY', 'TERM_OR_REGEX', 'CASE_SENSITI
 REGEX_LETTERS = r'[^a-zA-Z]'
 
 # main constants
-INPUT_DIR = r"C:\Users\M314694\Desktop\Application\cheack\test_notes"
-OUTPUT_DIR = r"C:\Users\M314694\Desktop\Application\cheack"
-PROJECT_RESOURCES_DIR = r"C:\Users\M314694\Desktop\Application\cheack\resources"
-PROJECT_PATH = r"C:\Users\M314694\Desktop\Application\cheack"
+INPUT_DIR = r""
+OUTPUT_DIR = r""
+PROJECT_RESOURCES_DIR = r""
+PROJECT_PATH = r""
 
 # Annotations
-NOTES_DIR = r"C:\Users\M314694\Desktop\Python_Package\sample_notes\sample_notes"
-OUTPUT_PATH = r"H:\Projects\Fred_MedSpacy\test8\Fred_MedSpacy_2024-04-19_11-20-51.xlsx"
+NOTES_DIR = r""
+OUTPUT_PATH = r""
 COLOR_LIST = ['#E69F00',
               '#56B4E9',
               '#009E73',
