@@ -1,8 +1,11 @@
+import os
 import sys
 import logging
 from model import Model
 from view import View
 from tkinter import messagebox
+
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 import helper.constants as CNST
 
 if getattr(sys, 'frozen', False):

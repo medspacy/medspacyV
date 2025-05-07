@@ -5,3 +5,6 @@ backup.py
 sample.py
 build/
 dist/
+
+application/
+debug.log

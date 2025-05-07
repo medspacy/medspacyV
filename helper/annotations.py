@@ -13,8 +13,7 @@ import tkinter.font as tkfont
 
 # importing custom modules
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-
-import constants as CNST
+import helper.constants as CNST
 
 # Setting up logging
 logging.basicConfig(level=logging.DEBUG,

@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import pandas as pd
 import os
+import sys
 import logging
 import base64
 from PIL import Image, ImageTk
@@ -11,6 +12,8 @@ from io import BytesIO
 import subprocess
 import shutil
 from datetime import datetime
+
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from helper.annotations import AnnotationViewer
 import helper.constants as CNST
 

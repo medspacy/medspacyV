@@ -21,6 +21,7 @@ from medspacy.context import ConText, ConTextRule
 from spacy.tokens import Span
 #from google.cloud import bigquery
 
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 import helper.constants as CNST
 
 # Setting up logging
@@ -79,29 +80,11 @@ class Model:
         inclusion_lexicon = inclusion_lexicon.drop_duplicates()
         return inclusion_lexicon
 
-    def load_excl_terms(self,excl_file):
-        """Load the exclusion terms from the provided file and return them as a set.
-
-        Args:
-            excl_file (str): Path to the exclusion terms file.
-
-        Returns:
-            set: A set of exclusion terms in lowercase.
-        """
-        result = set()
-        with open(excl_file, 'r') as fh:
-            for line in fh:
-                if line.startswith('!'):
-                    trimmed = line[1:]
-                    result.add(trimmed.strip().lower())
-        return result
-
-    def load_concept_rules(self, incl_lexicon, excl_lexicon=None):
+    def load_concept_rules(self, incl_lexicon):
         """Generate a list of concept rules from the inclusion lexicon and optional exclusion lexicon.
 
         Args:
             incl_lexicon (pandas.DataFrame): The inclusion lexicon containing terms and categories.
-            excl_lexicon (set, optional): The exclusion lexicon containing terms to exclude. Defaults to None.
 
         Returns:
             list: A list of concept rules generated from the lexicons.
@@ -116,9 +99,6 @@ class Model:
             term = row[CNST.LEXICON_COLS[2]]
             case_sensitive = row[CNST.LEXICON_COLS[3]]
             regex = row[CNST.LEXICON_COLS[4]]
-
-            if excl_lexicon and term.lower() in excl_lexicon:
-                continue
 
             term = "\\b(?:" + term + ")\\b"
             regex_pattern = fr"(?i){term}"
@@ -429,16 +409,15 @@ class Model:
         concept_matcher = nlp.add_pipe('medspacy_target_matcher') # add an empty matcher
         concept_rules = list()
         
-        # Load concepts and exclusion terms
+        # Load concepts
         try:
             
             inclusion_lexicon = None
-            exclusion_lexicon = None
             path_of_resource = f"{project_path_resources}/{CNST.RESOURCE_CONCEPTS}"
 
             inclusion_lexicon = self.load_lexicon(path_of_resource)
 
-            concept_rules = self.load_concept_rules(inclusion_lexicon, exclusion_lexicon)
+            concept_rules = self.load_concept_rules(inclusion_lexicon)
         except Exception as e:
             self.logger.error(f"Exception loading concept matcher rules: {e}")
 

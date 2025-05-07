@@ -12,3 +12,7 @@ Error details: Input and Output directories are required!
 Error type: Issues with selecting the directory
 Error details: Input and Output directories are required!
 
+[05-07-2025 09:39:59]
+Error type: There are no TXT file in the given input folder, since you unchecked the 'Use CSV as input' TXT files must be present in the input folder.
+Error details: Please double-check your input path contains the exact CSV or TXT files used for generating the output XLSX.
+
