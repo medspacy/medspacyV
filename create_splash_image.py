@@ -23,7 +23,7 @@ def create_main_window():
     is centered on the screen.
     """
     main_window = tk.Tk()
-    main_window.title("MedSpaCy: A visual interface for the medspacy NLP pipeline")
+    main_window.title("medspacyV: A visual interface for the medspacy NLP pipeline")
     
     # Set larger window size
     window_width = 600
@@ -33,7 +33,7 @@ def create_main_window():
     label_font = ("Arial", 14, "bold")  # Bold and larger font for the label
     
     label = ttk.Label(main_window, 
-                      text="\n\MedSpaCy:                                   \n\nA visual interface for the medspacy NLP pipeline                                   \n\nPlease wait while the application is loading ...                                   ", 
+                      text="\n\medspacyV:                                   \n\nA visual interface for the medspacy NLP pipeline                                   \n\nPlease wait while the application is loading ...                                   ", 
                       font=label_font,
                       anchor="center",
                       justify="center",)
