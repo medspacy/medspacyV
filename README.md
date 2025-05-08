@@ -1,9 +1,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Build Status](https://github.com/medspacy/medspacy/workflows/medspacy/badge.svg)
 
-# medspacyV: A Visual Interface for the MedSpacy NLP Pipeline
+# MedSpaCyV: A Visual Interface for the MedSpaCy NLP Pipeline
 
-`medspacyV` is a desktop application specifically for Windows OS that provides a visual interface to interact with the MedSpacy NLP pipeline. Developed by the Mayo Clinic’s Center for Clinical and Translational Science (CCaTS) Informatics Team, it allows users to configure and run MedSpacy's clinical text processing models without needing to write code.
+`MedSpaCyV` is a desktop application specifically for Windows OS that provides a visual interface to interact with the MedSpaCy NLP pipeline. Developed by the Mayo Clinic’s Center for Clinical and Translational Science (CCaTS) Informatics Team, it allows users to configure and run MedSpaCy's clinical text processing models without needing to write code.
 
 This application helps in annotating clinical texts, detecting various concepts, and processing notes with a user-friendly graphical interface.
 

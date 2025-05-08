@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 class View(tk.Tk):
-    """Creates and manages the main GUI window for the medspacyV application.
+    """Creates and manages the main GUI window for the MedSpaCy application.
 
     This class is responsible for setting up and displaying the user interface, 
     including tabs for configuring the NLP pipeline, entering concepts, adjusting 
@@ -36,7 +36,7 @@ class View(tk.Tk):
         """Initializes the View object and sets up the window and tabs.
         """
         super().__init__()
-        self.title("medspacyV: A visual interface for the medspacy NLP pipeline")
+        self.title("MedSpaCy: A visual interface for the medspacy NLP pipeline")
         self.geometry("1200x600")
 
         tab_control = ttk.Notebook(self)
@@ -214,7 +214,7 @@ class View(tk.Tk):
         self.log_file_path = os.path.join(initialdirectory, CNST.DEBUG_LOG_FILE)
         if not os.path.exists(self.log_file_path):
             with open(self.log_file_path, "w") as f:
-                f.write("Debug Log - Error Tracking - medspacyV\n\n")
+                f.write("Debug Log - Error Tracking - MedSpaCy\n\n")
 
     def log_error(self, error_type, error_message):
         """Logs an error message to the log file with a timestamp.
@@ -285,7 +285,7 @@ class View(tk.Tk):
         """Creates the 'About' tab in the user interface.
 
         This method sets up the content for the third tab, including displaying 
-        information about the medspacyV application, its origin, and purpose.
+        information about the MedSpaCy application, its origin, and purpose.
         """
         # Create an empty row
         self.empty_row2 = tk.Label(self.tab3, text="      ")
@@ -293,7 +293,7 @@ class View(tk.Tk):
         
         label_font = ("Arial", 14, "bold")
         full_text = (
-            "The medspacyV is a desktop application developed by the Mayo Clinic’s "
+            "The MedSpaCy is a desktop application developed by the Mayo Clinic's "
             "Center for Clinical and Translational Science (CCaTS) Informatics Team. It "
             "offers a visual interface for the open-source medspacy natural language "
             "processing package (https://github.com/medspacy/medspacy)."
@@ -665,7 +665,7 @@ class View(tk.Tk):
                 output_file = []
                 xlsx_files = [file for file in os.listdir(self.output_dir) if file.endswith(".xlsx")]
                 if not xlsx_files:
-                    messagebox.showerror("Error", "Output Folder doesn't contain output files. Please see the debug.log file in the same folder as your medspacyV.exe for possible cause.")
+                    messagebox.showerror("Error", "Output Folder doesn't contain output files. Please see the debug.log file in the same folder as your Controller.exe of MedSpaCyV for possible cause.")
                     self.log_error("Output Folder doesn't contain output files.","Missing .xlsx ouput files in the output, please provide the output folder with .xlsx output files in it.")
                     return
                 for file in xlsx_files:
@@ -673,12 +673,12 @@ class View(tk.Tk):
                     df = pd.read_excel(file_path)
                     missing_columns = [col for col in CNST.OUTPUT_HEADERS if col not in df.columns]
                     if len(missing_columns) > 0:
-                        messagebox.showerror("Error", "The columns in the output XLSX don't look right, or there is no record in it. Please see the debug.log file in the same folder as your medspacyV.exe for possible cause.")
+                        messagebox.showerror("Error", "The columns in the output XLSX don't look right, or there is no record in it. Please see the debug.log file in the same folder as your Controller.exe of MedSpaCyV for possible cause.")
                         self.log_error("The columns in the output XLSX don't look right, or there is no record in it.", f"The headers of the output file doesn't match the original columns which are: \n{', '.join(CNST.OUTPUT_HEADERS)}")
                         return
                     
                     if df["doc_name"].dropna().astype(str).str.strip().empty:
-                        messagebox.showerror("Error", "The columns in the output XLSX don't look right, or there is no record in it. Please see the debug.log file in the same folder as your medspacyV.exe for possible cause.")
+                        messagebox.showerror("Error", "The columns in the output XLSX don't look right, or there is no record in it. Please see the debug.log file in the same folder as your Controller.exe of MedSpaCyV for possible cause.")
                         self.log_error("The columns in the output XLSX don't look right, or there is no record in it.","The output file is empty because no matches were found for the given concepts in the input notes. \nPlease review the concepts and input data or verify that you have selected the correct output folder.")
                         return
                         
@@ -689,7 +689,7 @@ class View(tk.Tk):
 
                 if self.csv_file_check.get():
                     if "csv" not in output_file[0].split(".")[0]:
-                        messagebox.showerror("Error", "The input and output files do not correspond correctly to each other. Please double-check if the 'Use CSV as input' box is correctly (un)checked. \nPlease see the debug.log file in the same folder as your medspacyV.exe for possible cause.")
+                        messagebox.showerror("Error", "The input and output files do not correspond correctly to each other. Please double-check if the 'Use CSV as input' box is correctly (un)checked. \nPlease see the debug.log file in the same folder as your Controller.exe of MedSpaCyV for possible cause.")
                         self.log_error("The input and output files do not correspond correctly to each other.","You have selected 'Use CSV as input', but the specified output folder corresponds to processed .TXT file inputs. \nPlease double-check your input path contains the exact CSV or TXT files used for generating the output XLSX.")
                         return
 
@@ -697,7 +697,7 @@ class View(tk.Tk):
                     if not csv_files:
                         messagebox.showerror(
                             "Error",
-                            "The input and output files do not correspond correctly to each other. Please double-check if the 'Use CSV as input' box is correctly (un)checked. \nPlease see the debug.log file in the same folder as your medspacyV.exe for possible cause."
+                            "The input and output files do not correspond correctly to each other. Please double-check if the 'Use CSV as input' box is correctly (un)checked. \nPlease see the debug.log file in the same folder as your Controller.exe of MedSpaCyV for possible cause."
                         )
                         self.log_error("The input and output files do not correspond correctly to each other.",
                                     "There are no CSV file in the given input folder, since you checked the 'Use CSV as input' CSV files must be present in the input folder." +
@@ -718,7 +718,7 @@ class View(tk.Tk):
                         truncated_message = "\n... [truncated at top 3]" if len(missing_files) > 3 else ""
                         messagebox.showerror(
                             "Error",
-                            "The input and output files do not correspond correctly to each other. Please double-check if the 'Use CSV as input' box is correctly (un)checked. \nPlease see the debug.log file in the same folder as your medspacyV.exe for possible cause."
+                            "The input and output files do not correspond correctly to each other. Please double-check if the 'Use CSV as input' box is correctly (un)checked. \nPlease see the debug.log file in the same folder as your Controller.exe of MedSpaCyV for possible cause."
                         )
                         self.log_error("The input and output files do not correspond correctly to each other.",
                                     "Mismatch: Some input files do not have corresponding processed results in the output folder.\n" + 
@@ -729,7 +729,7 @@ class View(tk.Tk):
                     
                 else:
                     if "text" not in output_file[0].split(".")[0]:
-                        messagebox.showerror("Error", "The input and output files do not correspond correctly to each other. 'Use CSV as input' box is correctly (un)checked. \nPlease see the debug.log file in the same folder as your medspacyV.exe for possible cause.")
+                        messagebox.showerror("Error", "The input and output files do not correspond correctly to each other. 'Use CSV as input' box is correctly (un)checked. \nPlease see the debug.log file in the same folder as your Controller.exe of MedSpaCyV for possible cause.")
                         self.log_error("The input and output files do not correspond correctly to each other.",
                                     "You have not selected 'Use CSV as input' to process the .TXT files, but the specified output folder corresponds to processed .CSV file inputs." +
                                     "\nPlease double-check your input path contains the exact CSV or TXT files used for generating the output XLSX.")
@@ -739,7 +739,7 @@ class View(tk.Tk):
                     if not txt_files:
                         messagebox.showerror(
                             "Error",
-                            "The input and output files do not correspond correctly to each other. Please see the debug.log file in the same folder as your medspacyV.exe for possible cause."
+                            "The input and output files do not correspond correctly to each other. Please see the debug.log file in the same folder as your Controller.exe of MedSpaCyV for possible cause."
                         )
                         self.log_error("The input and output files do not correspond correctly to each other.",
                                     "There are no TXT file in the given input folder, since you unchecked the 'Use CSV as input' CSV files must be present in the input folder." +
@@ -755,7 +755,7 @@ class View(tk.Tk):
 
                         messagebox.showerror(
                             "Error",
-                            "The input and output files do not correspond correctly to each other. Please see the debug.log file in the same folder as your medspacyV.exe for possible cause."
+                            "The input and output files do not correspond correctly to each other. Please see the debug.log file in the same folder as your Controller.exe of MedSpaCyV for possible cause."
                         )
                         self.log_error("The input and output files do not correspond correctly to each other.",
                                     "Mismatch: Some input files do not have corresponding processed results in the output folder.\n" + 
