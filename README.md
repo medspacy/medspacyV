@@ -1,5 +1,4 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![Build Status](https://github.com/medspacy/medspacy/workflows/medspacy/badge.svg)
 
 # medspacyV: A Visual Interface for the medspacy NLP Pipeline
 
