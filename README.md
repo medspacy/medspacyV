@@ -48,7 +48,7 @@ Python 3.8.10 or higher is preferred for best compatibility.
 ### Clone the Repository
 
 ```bash
-    git clone https://mclm@dev.azure.com/mclm/medspacyV/_git/medspacyV
+    git clone https://github.com/medspacy/medspacyV
     cd medspacyV
 ```
 
