@@ -37,6 +37,39 @@ class Model:
         """
         self.logger = logging.getLogger(__name__)
     
+    def clean_text(self, text):
+        """Clean text by normalizing Unicode whitespace characters.
+        
+        Replaces problematic Unicode whitespace characters (like non-breaking space \xa0)
+        with regular spaces to prevent processing failures.
+        
+        Args:
+            text (str): The input text to clean.
+            
+        Returns:
+            str: The cleaned text with normalized whitespace.
+        """
+        if not isinstance(text, str):
+            return text
+        
+        # Replace non-breaking space (\xa0) and other Unicode whitespace with regular space
+        # This includes: non-breaking space, zero-width no-break space, and similar characters
+        text = text.replace('\xa0', ' ')  # Non-breaking space
+        text = text.replace('\u200b', '')  # Zero-width space (remove, don't replace)
+        text = text.replace('\u2009', ' ')  # Thin space
+        text = text.replace('\u2008', ' ')  # Punctuation space
+        text = text.replace('\u2007', ' ')  # Figure space
+        text = text.replace('\u2006', ' ')  # Six-per-em space
+        text = text.replace('\u2005', ' ')  # Four-per-em space
+        text = text.replace('\u2004', ' ')  # Three-per-em space
+        text = text.replace('\u2003', ' ')  # Em space
+        text = text.replace('\u2002', ' ')  # En space
+        text = text.replace('\u2001', ' ')  # Em quad
+        text = text.replace('\u2000', ' ')  # En quad
+        text = text.replace('\ufeff', '')  # Zero-width no-break space (BOM, remove)
+        
+        return text
+    
     def load_sections(self,sec_file, the_sectionizer):
         """Load sections from the provided file and add them to the sectionizer.
 
@@ -206,6 +239,9 @@ class Model:
                     if not isinstance(note_text, str) or note_text.strip() == "":
                         continue
                     
+                    # Clean text to normalize Unicode whitespace characters
+                    note_text = self.clean_text(note_text)
+                    
                     # Initiating the text processing through the NLP pipeline
                     doc = the_pipeline(note_text)
 
@@ -270,6 +306,10 @@ class Model:
                 if not note_txt:
                     #print(f + ' has empty text!')
                     continue
+                
+                # Clean text to normalize Unicode whitespace characters
+                note_txt = self.clean_text(note_txt)
+                
                 doc = the_pipeline(note_txt)
                 for ent in doc.ents:
                     
@@ -467,6 +507,3 @@ if __name__ == "__main__":
                                      args.input_mode, 
                                      args.csv_file_chk)
     print(output_file)
-
-if __name__ == "__main__":
-    main()
