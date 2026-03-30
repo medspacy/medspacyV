@@ -24,6 +24,9 @@ from spacy.tokens import Span
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 import helper.constants as CNST
 
+# Ellie
+import io # ADDED: Essential for processing strings as files
+
 # Setting up logging
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -36,7 +39,7 @@ class Model:
         """setting logging
         """
         self.logger = logging.getLogger(__name__)
-    
+
     def load_sections(self,sec_file, the_sectionizer):
         """Load sections from the provided file and add them to the sectionizer.
 
@@ -50,10 +53,30 @@ class Model:
                 sec_id, synonym, source = columns[:3]
 
                 if sec_id == CNST.SECTION_ID:
-                    continue 
+                    continue
                 entry = {CNST.LITERAL : synonym,
                          CNST.CATEGORY : sec_id}
                 the_sectionizer.add(SectionRule.from_dict(entry)) # load one rule in a dictionary format
+
+    def sanitize_text(self, s: str) -> str:
+        """
+        Replace problematic characters with spaces.
+        Keep newlines and tabs (so text structure/offsets stay reasonable).
+        """
+        if s is None:
+            return ""
+
+        # Make sure it's a string
+        if not isinstance(s, str):
+            s = str(s)
+
+        # Replace known problem bytes/chars
+        s = s.replace("\x00", " ").replace("\xa0", " ")
+
+        # Replace other control chars (except newline/tab/carriage return)
+        s = "".join((" " if (ord(ch) < 32 and ch not in "\n\r\t") else ch) for ch in s)
+
+        return s
 
     def load_lexicon(self,lex_file):
         """Load the inclusion lexicon from the provided file and return it as a pandas DataFrame.
@@ -67,7 +90,7 @@ class Model:
         result = dict()
         inclusion_lexicon = pd.read_excel(lex_file)
         self.logger.info("Read the concept")
-                
+
         inclusion_lexicon = inclusion_lexicon.iloc[:, :5]
         inclusion_lexicon.columns = CNST.LEXICON_COLS
 
@@ -75,7 +98,7 @@ class Model:
         inclusion_lexicon = inclusion_lexicon[~inclusion_lexicon[CNST.LEXICON_COLS[2]].isnull()]
 
         self.logger.info(f"concepts number is {len(inclusion_lexicon)}")
-        
+
 
         inclusion_lexicon = inclusion_lexicon.drop_duplicates()
         return inclusion_lexicon
@@ -130,16 +153,16 @@ class Model:
             TargetRule: A constructed target rule for use in the NLP pipeline.
         """
         if case_sensitive:
-            if regex: 
+            if regex:
                 regex_pattern = [{"TEXT":{"REGEX": term}}]
                 rule=TargetRule(literal=term, category=norm,pattern=regex_pattern, attributes=id_attr)
-            else:    
+            else:
                 tokens =  term.split(' ')
                 token_patterns = [{"TEXT": token} for token in tokens]
-                rule = TargetRule(literal=term, category=norm, pattern=token_patterns, attributes=id_attr)                    
+                rule = TargetRule(literal=term, category=norm, pattern=token_patterns, attributes=id_attr)
         else:
             if regex:
-                regex_pattern = [{"TEXT":{"REGEX": term}}] # default to insensitive 
+                regex_pattern = [{"TEXT":{"REGEX": term}}] # default to insensitive
                 rule = TargetRule(literal=term, category=norm, pattern=regex_pattern, attributes=id_attr)
             else:
                 tokens =  term.split(' ')
@@ -162,7 +185,7 @@ class Model:
 
         Raises:
             ValueError: If no CSV files are found in the directory.
-        
+
         Returns:
             str: The path to the folder containing the output files.
         """
@@ -183,13 +206,65 @@ class Model:
                 raise ValueError("No CSV files found in the directory.")
             self.logger.info(f"Processing the CSV file input...")
 
-            total_texts = sum(len(pd.read_csv(os.path.join(the_input_path, file))) for file in csv_files)
-            
+
+
+            # Pre-calculating total rows for progress tracking
+
+            # Pre-calculating total rows for progress tracking
+            total_texts = 0
             for csv_file in csv_files:
                 csv_path = os.path.join(the_input_path, csv_file)
-                csv_path = os.path.normpath(csv_path)
+                # CHANGED: read as bytes then decode + replace bad bytes, so nothing crashes/drops
+                # with open(csv_path, 'r', encoding='cp1252', errors='replace') as f:
+                #     clean_content = f.read().replace('\x00', ' ').replace('\xa0', ' ')
+                with open(csv_path, "rb") as f:  # CHANGED
+                    clean_content = (
+                        f.read()
+                         .decode("cp1252", errors="replace")  # ADDED
+                         .replace("\x00", " ")                # (kept) replace nulls with space
+                         .replace("\xa0", " ")                # (kept) replace NBSP with space
+                    )
+
+
+                df_tmp = pd.read_csv(
+                  io.StringIO(clean_content),
+                  engine="python",          # ADDED: more tolerant CSV parsing
+                  on_bad_lines="warn",       # ADDED: warns instead of error; keeps going (no hard drop from exception)
+                  dtype=str,                # ADDED: force all columns to string so text values are preserved consistently.
+                  keep_default_na= False    # ADDED : keep empty strings as empty strings (avoid NaN conversion side-effects).
+
+
+                )
+                total_texts += len(df_tmp)
+
+
+            for csv_file in csv_files:
+                csv_path = os.path.normpath(os.path.join(the_input_path, csv_file))
                 self.logger.info(f"Processing the file: {csv_path}")
-                input_csv_file = pd.read_csv(csv_path)
+
+                # --- ADDED: THE FIX FOR \x00 ---
+                # CHANGED: read as bytes then decode + replace bad bytes, so nothing crashes/drops
+                with open(csv_path, "rb") as f:  # CHANGED
+                            clean_content = (
+                                f.read()
+                                 .decode("cp1252", errors="replace")  # ADDED
+                                 .replace("\x00", " ")                # (kept)
+                                 .replace("\xa0", " ")                # (kept)
+                            )
+
+
+
+
+                # CHANGED: tolerant parsing options
+                input_csv_file = pd.read_csv(  # CHANGED
+                    io.StringIO(clean_content),
+                    engine="python",          # ADDED
+                    on_bad_lines="warn",       # ADDED
+                    dtype=str,                 # ADDED
+                    keep_default_na=False,     #ADDED
+                )
+
+
 
                 # making sure that the required columns exist
                 if 'doc_name' not in input_csv_file.columns or 'note_text' not in input_csv_file.columns:
@@ -200,12 +275,17 @@ class Model:
 
                 for idx, row in input_csv_file.iterrows():
                     doc_id = row["doc_name"]
-                    note_text = row["note_text"]
+                    note_text = self.sanitize_text(row["note_text"])  #CHANGED
+
+
+
+
 
                     # skipping the empty notes
                     if not isinstance(note_text, str) or note_text.strip() == "":
+                        files_processed += 1 # ADDED: Increment to keep progress bar accurate
                         continue
-                    
+
                     # Initiating the text processing through the NLP pipeline
                     doc = the_pipeline(note_text)
 
@@ -254,25 +334,38 @@ class Model:
             for f in files:
                 if f.endswith('.txt'):
                     total_files = total_files + 1
-        
+
             for f in files:
                 if not f.endswith('.txt'):
                     continue
                 note_txt = None
 
-                with open(os.path.join(the_input_path, f),  'r', encoding='utf-8') as fh:
-                    try:
-                        note_txt = fh.read()
-                    except Exception as e:
-                        self.logger.error(f"The program was not able to process the following file:{f} with errror: {e}")
-                        continue
-                
-                if not note_txt:
+                # Ellie update
+                #with open(os.path.join(the_input_path, f),  'r', encoding='utf-8') as fh:
+                # with open(os.path.join(the_input_path, f), 'r', encoding='cp1252', errors='replace') as fh:
+                #     try:
+                #         note_txt = fh.read().replace('\x00', ' ')
+                #     except Exception as e:
+                #         self.logger.error(f"The program was not able to process the following file:{f} with errror: {e}")
+                #         continue
+
+                with open(os.path.join(the_input_path, f), "rb") as fh:
+                                    raw = fh.read()
+
+                note_txt = raw.decode("cp1252", errors="replace")
+                note_txt = self.sanitize_text(note_txt)
+
+
+
+                if not note_txt.strip():
                     #print(f + ' has empty text!')
                     continue
+
+
+
                 doc = the_pipeline(note_txt)
                 for ent in doc.ents:
-                    
+
                     results.append({"doc_name": f,
                                     "concept":ent.label_,
                                     "matched_text": ent.text,
@@ -301,18 +394,18 @@ class Model:
                 else:
                     self.logger.info("No files to process.")
 
-                
-                
+
+
         df = pd.DataFrame(results)
         if df.empty:
             return "EMPTY"
         else:
 
             project_name = os.path.basename(project_path)
-            
+
             # Get the current date and time
             current_datetime = time.localtime()
-            
+
             # Format the current date and time as desired
             formatted_datetime = time.strftime("%Y-%m-%d_%H-%M-%S", current_datetime)
             timestamped_output_folder = f"{tho_output_path}/{formatted_datetime}"
@@ -323,18 +416,18 @@ class Model:
 
             output_files = []
             unique_doc_ids = df[CNST.DOC_ID].unique()
-            
+
             for i in range(0, len(unique_doc_ids), CNST.MAX_DOCS):
                 doc_id_chunk = unique_doc_ids[i:i + CNST.MAX_DOCS]
                 chunk_df = df[df[CNST.DOC_ID].isin(doc_id_chunk)]
-                
+
                 output_file_name_csv = f"{project_name}_{formatted_datetime}_{file_flag}_part{i//CNST.MAX_DOCS+1}.csv"
                 output_file_name_excel = f"{project_name}_{formatted_datetime}_{file_flag}_part{i//CNST.MAX_DOCS+1}.xlsx"
-                
+
                 chunk_df.to_csv(f"{csv_folder}/{output_file_name_csv}", index=False, sep='|')
                 chunk_df.to_excel(f"{xlsx_folder}/{output_file_name_excel}", index=False)
                 output_files.append(os.path.join(xlsx_folder, output_file_name_excel))
-            
+
             return xlsx_folder
 
     def perform_nlp(self,input_dir, output_dir, project_path_resources, project_path, input_mode, csv_file_chk, progress_callback=None):
@@ -352,27 +445,28 @@ class Model:
         Returns:
             str: The path to the output folder containing processed files.
         """
-    
+
         old_stdout = sys.stdout
         self.logger.info(f"input_dir, output_dir,project_path_resources, project_path, input_mode,{input_dir}, {output_dir},{project_path_resources}, {project_path}, {input_mode}\n")
 
         nlp, inclusion_lexicon = self.init_nlp_pipeline(project_path_resources)
-        
+
         if input_mode == 'files':
             try:
-                self.logger.info("I'm going to files on dist\d")
+                self.logger.info("I'm going to files on disk")
                 entity_types_to_print = ['RARE_DZ'] # customize for use case!
-                output_file=self.process_notes_on_disk(nlp, input_dir,output_dir, project_path_resources, inclusion_lexicon, project_path, csv_file_chk, progress_callback)  
-            
+                output_file=self.process_notes_on_disk(nlp, input_dir,output_dir, project_path_resources, inclusion_lexicon, project_path, csv_file_chk, progress_callback)
+
                 self.logger.info("NLP process finished.\n")
                 self.logger.info(f"outputfile {output_file}")
 
                 return(output_file)
             except Exception as e:
-                self.logger.error(f"Error procesing files on disk", {e})
-        else: 
+                # Ellie
+                self.logger.error(f"Error procesing files on disk: {e}")
+        else:
             self.logger.error(f"input_file is not file {input_mode}")
-    
+
     def init_nlp_pipeline(self, project_path_resources):
         """Initializes the NLP pipeline by adding components like tokenizers, sentence splitters, and sectionizers.
 
@@ -393,25 +487,25 @@ class Model:
             sentencizer = nlp.add_pipe('medspacy_pyrush', config={'rules_path': path_of_resource})
         except Exception as e:
             self.logger.error(f"Exception adding custom sentencizer: {e}")
-            sentencizer = nlp.add_pipe('medspacy_pyrush') 
+            sentencizer = nlp.add_pipe('medspacy_pyrush')
 
         # ADD Sectionizer
-        try:    
+        try:
             path_of_resource=f"{project_path_resources}/{CNST.RESOURCE_SECTIONS_RULE}"
-            
+
             sectionizer = nlp.add_pipe('medspacy_sectionizer', config={'rules': None,
                                                                         'require_start_line': True})
             self.load_sections(path_of_resource, sectionizer)
         except Exception as e:
             self.logger.error(f"Exception adding custom sectionizer: {e}")
-            sectionizer = nlp.add_pipe('medspacy_sectionizer') # load the default           
-    
+            sectionizer = nlp.add_pipe('medspacy_sectionizer') # load the default
+
         concept_matcher = nlp.add_pipe('medspacy_target_matcher') # add an empty matcher
         concept_rules = list()
-        
+
         # Load concepts
         try:
-            
+
             inclusion_lexicon = None
             path_of_resource = f"{project_path_resources}/{CNST.RESOURCE_CONCEPTS}"
 
@@ -423,18 +517,18 @@ class Model:
 
         concept_matcher.add(concept_rules) # fill attach the rules to the matcher
 
-        #Load general context       
-        
+        #Load general context
+
         context_classifier = nlp.add_pipe('medspacy_context', config={"rules": None})  # load the default context component
         try:
             # Attempting to use a custom path for context rules
             path_of_resource = f"{project_path_resources}/{CNST.RESOURCE_CONTEXT_RULES}"
-            
+
             # Loading custom rules from the JSON file
             rules = ConTextRule.from_json(path_of_resource)
             # Adding the custom rules to the context classifier
             context_classifier.add(rules)
-            
+
         except Exception as e:
             self.logger.error(f"Exception loading custom context rules: {e}")
             # Fallback to default context rules
@@ -446,8 +540,8 @@ class Model:
 if __name__ == "__main__":
 
     # argparse to accept command-line arguments
-    parser = argparse.ArgumentParser(description="Run the NLP processing with specified directories and project settings.")
-    
+    parser = argparse.ArgumentParser(description="Run the NLP processing with specified directories and project settings2.")
+
     # command-line arguments
     parser.add_argument('--input_dir', type=str, help="Directory containing input files (default from CNST).")
     parser.add_argument('--output_dir', type=str, help="Directory to save output files (default from CNST).")
@@ -455,18 +549,15 @@ if __name__ == "__main__":
     parser.add_argument('--project_path', type=str, help="Path to the project directory (default from CNST).")
     parser.add_argument('--input_mode', type=str, default=CNST.INPUT_MODE, choices=['files', 'csv'], help="Input mode (either 'files' or 'csv').")
     parser.add_argument('--csv_file_chk', type=bool, default=True, help="Flag to check for CSV files in input.")
-    
+
     args = parser.parse_args()
 
     model = Model()
-    
+
     output_file = model.perform_nlp(args.input_dir,
-                                     args.output_dir, 
-                                     args.project_resources_dir, 
-                                     args.project_path, 
-                                     args.input_mode, 
+                                     args.output_dir,
+                                     args.project_resources_dir,
+                                     args.project_path,
+                                     args.input_mode,
                                      args.csv_file_chk)
     print(output_file)
-
-if __name__ == "__main__":
-    main()
