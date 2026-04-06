@@ -19,8 +19,8 @@ def center_window(window, width, height):
 def create_main_window():
     """Creates and displays the main window of the application with a label.
 
-    The main window has a title, and a label is displayed with information 
-    about the application. The window size is set to 600x300, and the window 
+    The main window has a title, and a label is displayed with information
+    about the application. The window size is set to 600x300, and the window
     is centered on the screen.
     """
     main_window = tk.Tk()

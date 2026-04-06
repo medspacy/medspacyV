@@ -6,13 +6,13 @@ import pytest
 @pytest.fixture
 def notes_csv_dir():
     """Path to the sample CSV test input directory."""
-    return os.path.join(os.path.dirname(__file__), "..", "notes", "test_input_csv")
+    return os.path.join(os.path.dirname(__file__), "data", "test_input_csv")
 
 
 @pytest.fixture
 def notes_txt_dir():
     """Path to the sample TXT test input directory."""
-    return os.path.join(os.path.dirname(__file__), "..", "notes", "test_input_txt")
+    return os.path.join(os.path.dirname(__file__), "data", "test_input_txt")
 
 
 @pytest.fixture

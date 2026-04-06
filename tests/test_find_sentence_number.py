@@ -67,10 +67,11 @@ class TestFindSentenceNumber:
         assert sent_num == 3
         assert chars_before == 13
 
-    def test_empty_text_out_of_bounds(self):
+    def test_empty_text_returns_first_sentence(self):
+        # "".split("\n") == [""] — one empty sentence, index 0 falls within it
         sent_num, chars_before = find_sentence_number("", 0)
-        assert sent_num == -1
-        assert chars_before == -1
+        assert sent_num == 1
+        assert chars_before == 0
 
     def test_index_at_newline_boundary(self):
         # "Hello" = 5 chars, newline at index 5 → belongs to sentence 1

@@ -101,7 +101,7 @@ For changes to any of the above, please open an issue first to discuss.
 ## Building the EXE Locally
 
 ```bash
-python create_splash_image.py
+python assets/create_splash_image.py
 pyinstaller controller.spec --noconfirm
 # Output: dist/Controller.exe
 ```

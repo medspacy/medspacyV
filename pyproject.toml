@@ -7,7 +7,7 @@ name = "medspacyV"
 version = "1.1.0"
 description = "A visual desktop interface for the medspacy clinical NLP pipeline"
 readme = "README.md"
-license = "MIT"
+license = {text = "MIT"}
 requires-python = ">=3.8"
 keywords = ["medspacy", "nlp", "clinical", "ner", "gui"]
 classifiers = [
@@ -61,7 +61,7 @@ ignore = [
     "F401",  # unused imports — too many commented-out imports in codebase
     "F841",  # unused variables — exists in core files we do not lint
 ]
-exclude = ["application/", "__pycache__/", "controller.py", "view.py", "model.py", "create_splash_image.py"]
+exclude = ["application/", "__pycache__/"]
 
 [tool.mypy]
 python_version = "3.8"

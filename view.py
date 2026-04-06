@@ -25,11 +25,11 @@ logging.basicConfig(level=logging.DEBUG,
 class View(tk.Tk):
     """Creates and manages the main GUI window for the MedSpaCy application.
 
-    This class is responsible for setting up and displaying the user interface, 
-    including tabs for configuring the NLP pipeline, entering concepts, adjusting 
-    advanced settings, and selecting directories for input/output. It also manages 
+    This class is responsible for setting up and displaying the user interface,
+    including tabs for configuring the NLP pipeline, entering concepts, adjusting
+    advanced settings, and selecting directories for input/output. It also manages
     events and actions related to the UI components.
-    
+
     Args:
         tk (module): The tkinter module for creating GUI elements.
     """
@@ -64,10 +64,10 @@ class View(tk.Tk):
         self.logger = logging.getLogger(__name__)
 
     def create_tab1_contents(self):
-        """Creates the contents of the first tab (Configure and Run the Pipeline). 
+        """Creates the contents of the first tab (Configure and Run the Pipeline).
 
-        This method sets up all the UI elements on the first tab, including project 
-        selection, concepts editing, advanced settings for sentence splitter, 
+        This method sets up all the UI elements on the first tab, including project
+        selection, concepts editing, advanced settings for sentence splitter,
         section detector, and negation detector, as well as input directory selection.
         """
         # Adjust font size for labels and buttons
@@ -266,7 +266,7 @@ class View(tk.Tk):
     def toggle_review_button(self, *args):
         """Toggles the state of the review button based on the checkbox.
 
-        Enables or disables the review button and the process notes button, 
+        Enables or disables the review button and the process notes button,
         depending on whether the 'use existing output' checkbox is selected.
         """
         if self.use_existing_output.get():
@@ -285,7 +285,7 @@ class View(tk.Tk):
     def create_tab3(self):
         """Creates the 'About' tab in the user interface.
 
-        This method sets up the content for the third tab, including displaying 
+        This method sets up the content for the third tab, including displaying
         information about the medspacyV application, its origin, and purpose.
         """
         # Create an empty row
@@ -308,8 +308,8 @@ class View(tk.Tk):
     def create_or_open_project(self):
         """Opens a project directory or creates a new one.
 
-        This method allows the user to either select an existing project directory 
-        or create a new one. It also sets up necessary directories and files, 
+        This method allows the user to either select an existing project directory
+        or create a new one. It also sets up necessary directories and files,
         such as creating a "resources" folder if it doesn't exist.
         """
         # Get the directory where the main Python script is located
@@ -347,8 +347,8 @@ class View(tk.Tk):
     def adjust_sent_tokenizer(self):
         """Allows the user to edit the sentence tokenizer rules.
 
-        This method checks if the project resources directory exists, and if so, 
-        opens the sentence rule file using Notepad for editing. It logs an error 
+        This method checks if the project resources directory exists, and if so,
+        opens the sentence rule file using Notepad for editing. It logs an error
         if the project directory is not selected.
         """
         if self.project_resources_dir == "":
@@ -363,8 +363,8 @@ class View(tk.Tk):
     def adjust_sectionizer(self):
         """Allows the user to edit the sectionizer rules.
 
-        This method checks if the project resources directory exists, and if so, 
-        opens the section rule file using Notepad for editing. If the file is not 
+        This method checks if the project resources directory exists, and if so,
+        opens the section rule file using Notepad for editing. If the file is not
         found, it logs the error and shows an error message.
         """
         if not self.project_resources_dir:
@@ -382,8 +382,8 @@ class View(tk.Tk):
     def adjust_negation_rules(self):
         """Allows the user to edit the negation detection rules.
 
-        This method checks if the project resources directory exists, and if so, 
-        opens the negation rule file using Notepad for editing. If the file is not 
+        This method checks if the project resources directory exists, and if so,
+        opens the negation rule file using Notepad for editing. If the file is not
         found, it logs the error and shows an error message.
         """
         if not self.project_resources_dir:
@@ -401,7 +401,7 @@ class View(tk.Tk):
     def enter_concepts(self):
         """Allows the user to enter or edit the concepts file.
 
-        This method opens the concepts file in Excel. If the file doesn't exist, 
+        This method opens the concepts file in Excel. If the file doesn't exist,
         it creates a new one with the appropriate headers and opens it in Excel.
         """
         if not self.project_resources_dir:
@@ -438,8 +438,8 @@ class View(tk.Tk):
     def update_rule_file_paths(self):
         """Updates the labels to display the paths of various rule files.
 
-        This method checks if the required rule files exist in the project resources 
-        directory. It then updates the displayed paths, indicating whether the 
+        This method checks if the required rule files exist in the project resources
+        directory. It then updates the displayed paths, indicating whether the
         files are found or not.
         """
         if not self.project_resources_dir:
@@ -807,7 +807,7 @@ class View(tk.Tk):
     def reset_progress(self):
         """Resets the progress bar to 0 and updates the progress label.
 
-        This method is typically used to reset the progress bar and label 
+        This method is typically used to reset the progress bar and label
         to their initial state before starting a new operation or process.
         """
         self.progress['value'] = 0
@@ -820,8 +820,8 @@ class View(tk.Tk):
         Args:
             value (float): The current value of the progress (0 to 100).
             prog (str): A description or label to be displayed alongside the progress percentage.
-        
-        This method is typically used to update the progress bar and the associated 
+
+        This method is typically used to update the progress bar and the associated
         label as the process progresses, showing the current value and progress description.
         """
         self.progress['value'] = value

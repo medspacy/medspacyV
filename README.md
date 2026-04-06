@@ -12,9 +12,10 @@ This application helps in annotating clinical texts, detecting various concepts,
 
 ## Project Structure
 
+- **assets/** — Splash screen image and generator script
 - **helper/** — Annotation viewer and shared constants
 - **resources/** — NLP rule and configuration files (`concepts.xlsx`, `context_rules.json`, `section_rules.tsv`, `sentence_rules.tsv`)
-- **tests/** — Unit and integration tests
+- **tests/** — Unit and integration tests (sample data in `tests/data/`)
 - **docs/** — Architecture and reference documentation
 - `controller.py` — Entry point, MVC wiring
 - `model.py` — Core NLP pipeline and file processing
@@ -77,7 +78,7 @@ python controller.py
 The EXE is built automatically via GitHub Actions on every release tag (`v*.*.*`). To build locally on Windows:
 
 ```bash
-python create_splash_image.py  # one-time, generates splash_image.PNG
+python assets/create_splash_image.py  # one-time, generates assets/splash_image.PNG
 pyinstaller controller.spec --noconfirm
 # Output: dist/Controller.exe
 ```
