@@ -12,6 +12,10 @@ dist/
 # Virtual environment
 application/
 .venv/
+.venv38/
+
+# pyenv
+.python-version
 
 # Packaging artifacts
 *.egg-info/
