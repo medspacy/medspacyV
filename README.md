@@ -79,7 +79,6 @@ python controller.py
 The EXE is built automatically via GitHub Actions on every release tag (`v*.*.*`). To build locally on Windows:
 
 ```bash
-python assets/create_splash_image.py  # one-time, generates assets/splash_image.PNG
 pyinstaller controller.spec --noconfirm
 # Output: dist/Controller.exe
 ```

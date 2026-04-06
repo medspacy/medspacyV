@@ -30,9 +30,6 @@ jobs:
       - name: Download spacy model
         run: python -m spacy download en_core_web_sm
 
-      - name: Generate splash image
-        run: python assets/create_splash_image.py
-
       - name: Build EXE with PyInstaller
         run: pyinstaller controller.spec --noconfirm
 
