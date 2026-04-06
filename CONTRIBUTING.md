@@ -27,7 +27,7 @@ python -m venv .venv
 source .venv/bin/activate
 
 # Install runtime + dev dependencies
-pip install -e ".[dev]"
+pip install -r requirements-dev.txt
 
 # Download spacy language model
 python -m spacy download en_core_web_sm

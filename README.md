@@ -21,7 +21,10 @@ This application helps in annotating clinical texts, detecting various concepts,
 - `model.py` — Core NLP pipeline and file processing
 - `view.py` — Tkinter GUI
 - `controller.spec` — PyInstaller build configuration
-- `pyproject.toml` — Project metadata and dependencies
+- `requirements.txt` — Runtime dependencies
+- `requirements-dev.txt` — Dev dependencies (includes requirements.txt)
+- `setup.cfg` — Tool configuration (pytest, mypy)
+- `ruff.toml` — Ruff linter configuration
 
 ## Application Preview
 
@@ -59,11 +62,9 @@ python -m venv .venv
 # macOS / Linux
 source .venv/bin/activate
 
-pip install -e ".[dev]"
+pip install -r requirements-dev.txt  # includes ruff, pytest, mypy
 python -m spacy download en_core_web_sm
 ```
-
-> **Prefer uv?** Replace `pip install` with `uv pip install` — everything else stays the same.
 
 ### Get Started
 

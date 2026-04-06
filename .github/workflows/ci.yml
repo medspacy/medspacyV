@@ -41,8 +41,7 @@ jobs:
           # Pre-install it with --no-build-isolation using setuptools<75 to work around this.
           pip install cython "setuptools<75"
           pip install pyrush --no-build-isolation
-          pip install -e ".[dev]"
-          # Install spacy language model required by medspacy
+          pip install -r requirements-dev.txt
           python -m spacy download en_core_web_sm || true
 
       - name: Run unit tests
