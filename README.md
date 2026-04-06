@@ -1,6 +1,6 @@
 [![CI](https://github.com/medspacy/medspacyV/actions/workflows/ci.yml/badge.svg)](https://github.com/medspacy/medspacyV/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.8.20](https://img.shields.io/badge/python-3.8.20-blue.svg)](https://www.python.org/downloads/release/python-3820/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Platform: Windows](https://img.shields.io/badge/platform-Windows-0078d4.svg)](https://github.com/medspacy/medspacyV/releases)
 
@@ -42,7 +42,7 @@ This application helps in annotating clinical texts, detecting various concepts,
 
 ### Prerequisites (developers only)
 
-- Python 3.8.10 or higher
+- Python 3.8.20
 
 ### Clone the Repository
 

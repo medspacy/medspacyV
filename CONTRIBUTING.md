@@ -13,7 +13,7 @@ Thank you for your interest in contributing! This guide covers everything you ne
 
 ## Dev Environment Setup
 
-**Requirements:** Python 3.8+, Windows recommended for full GUI testing.
+**Requirements:** Python 3.8.20, Windows recommended for full GUI testing.
 
 ```bash
 git clone https://github.com/medspacy/medspacyV
@@ -51,7 +51,7 @@ pytest --cov=. --cov-report=term-missing
 Tests live in `tests/` and are split into:
 - `test_sanitize_text.py` — pure unit tests for text cleaning logic
 - `test_find_sentence_number.py` — pure unit tests for sentence indexing
-- `test_csv_loading.py` — integration tests using sample data in `notes/`
+- `test_csv_loading.py` — integration tests using sample data in `tests/data/`
 
 ---
 
