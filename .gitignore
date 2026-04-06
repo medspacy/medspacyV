@@ -1,10 +1,37 @@
 upgrade/
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
 
 backup.py
 sample.py
 build/
 dist/
 
+# Virtual environment
 application/
+.venv/
+
+# Packaging artifacts
+*.egg-info/
+
+# Logs
 debug.log
+*.log
+
+# EXE — distributed via GitHub Releases, not committed
+app/Controller.exe
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Ruff / mypy caches
+.ruff_cache/
+.mypy_cache/
+
+# OS
+.DS_Store
+Thumbs.db

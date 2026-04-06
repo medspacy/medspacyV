@@ -1,31 +1,34 @@
 # -*- coding: utf-8 -*-
 
-import os
-import sys
-import pandas as pd
-import time
-import re
+import argparse
 import json
 import logging
-import argparse
+import os
+import re
+import sys
+import time
+
 #import spacy
 import medspacy
-from medspacy.sentence_splitting import PyRuSHSentencizer
-from medspacy.section_detection import SectionRule
-from medspacy.section_detection import Sectionizer
+import pandas as pd
+from medspacy.context import ConText, ConTextRule
+
 #from clinical_sectionizer import TextSectionizer
 from medspacy.ner import TargetRule
-from medspacy.context import ConText, ConTextRule
+from medspacy.section_detection import Sectionizer, SectionRule
+from medspacy.sentence_splitting import PyRuSHSentencizer
+
 #from medspacy.visualization import visualize_ent
 #from spacy import displacy
 from spacy.tokens import Span
+
 #from google.cloud import bigquery
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-import helper.constants as CNST
-
 # Ellie
-import io # ADDED: Essential for processing strings as files
+import io  # ADDED: Essential for processing strings as files
+
+import helper.constants as CNST
 
 # Setting up logging
 logging.basicConfig(level=logging.DEBUG,
@@ -204,7 +207,7 @@ class Model:
             csv_files = [f for f in os.listdir(the_input_path) if f.endswith('.csv')]
             if not csv_files:
                 raise ValueError("No CSV files found in the directory.")
-            self.logger.info(f"Processing the CSV file input...")
+            self.logger.info("Processing the CSV file input...")
 
 
 
@@ -327,7 +330,7 @@ class Model:
                         self.logger.info("No files to process.")
         else:
             file_flag = "text"
-            self.logger.info(f"Processing the Text files input...")
+            self.logger.info("Processing the Text files input...")
             files = os.listdir(the_input_path)
 
             total_files = 0
