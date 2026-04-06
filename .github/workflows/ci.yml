@@ -39,8 +39,9 @@ jobs:
           python -m pip install --upgrade pip
           # PyRuSH 1.0.13 has a setuptools 75.x incompatibility in its pyproject.toml.
           # Pre-install it with --no-build-isolation using setuptools<75 to work around this.
-          pip install cython "setuptools<75"
-          pip install pyrush --no-build-isolation
+          pip install cython wheel "setuptools<75"
+          pip install loguru PyFastNER
+          pip install pyrush --no-build-isolation --no-deps
           pip install -r requirements-dev.txt
           python -m spacy download en_core_web_sm || true
 
