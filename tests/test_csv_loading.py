@@ -1,6 +1,6 @@
 """
 Integration tests for Model CSV loading and text processing helpers.
-Reads from notes/test_input_csv/ — no GUI, no NLP pipeline.
+Reads from tests/data/test_input_csv/ — no GUI, no NLP pipeline.
 """
 import io
 import os

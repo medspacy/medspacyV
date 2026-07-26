@@ -41,7 +41,7 @@ python -m spacy download en_core_web_sm
 # Unit tests only (fast, no disk I/O)
 pytest -m unit
 
-# Integration tests (reads from notes/)
+# Integration tests (reads sample data from tests/data/)
 pytest -m integration
 
 # All tests with coverage report
@@ -101,10 +101,13 @@ For changes to any of the above, please open an issue first to discuss.
 ## Building the EXE Locally
 
 ```bash
-python assets/create_splash_image.py
 pyinstaller controller.spec --noconfirm
 # Output: dist/Controller.exe
 ```
+
+> The splash image (`assets/splash_image.PNG`) is committed to the repo, so it does
+> not need to be regenerated before building. `assets/create_splash_image.py` is kept
+> only for regenerating it if the design changes.
 
 > Note: The EXE is not committed to the repo. Download the latest release from the
 > [Releases page](https://github.com/medspacy/medspacyV/releases).
