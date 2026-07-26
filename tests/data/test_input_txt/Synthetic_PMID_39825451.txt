@@ -1,0 +1,32 @@
+Patient: Mr. Haoren Zeng
+Age: 77
+Gender: Male
+
+Chief Complaint:
+Severe craniofacial postherpetic neuralgia.
+
+History of Present Illness:
+The patient is a 77-year-old male with a history of severe craniofacial postherpetic neuralgia. He underwent pulsed radiofrequency treatment of the trigeminal ganglion twice in our department. During the first procedure, a radiofrequency needle was successfully placed through the foramen ovale under local anesthesia and intravenous sedation with dexmedetomidine. The patient reported approximately 50% pain reduction postoperatively. The second procedure was performed one week later, but the administration of sedative agents was suspended due to hemodynamic instability. Consequently, the patient exhibited hypersensitivity to the percutaneous operation under local anesthesia, and the needle could not be placed inside Meckel's cave due to uncontrollable breakthrough pain.
+
+Physical Examination:
+General: Hemodynamically stable during the first procedure, unstable during the second procedure.
+Neurologic: Hypersensitivity noted during the second procedure.
+
+Medications:
+Oxycodone: 10-20 mg, every 12 hours
+Pregabalin: 75 mg, two times a day
+
+Follow-Up:
+At the last follow-up, 1.5 years after discharge, the patient continued to require oral medication for pain control.
+
+Assessment:
+The patient has severe craniofacial postherpetic neuralgia with partial pain relief following pulsed radiofrequency treatment of the trigeminal ganglion. Hemodynamic instability during the second procedure limited the effectiveness of the treatment.
+
+Plan:
+Continue current pain management regimen with oxycodone and pregabalin.
+Monitor for any changes in pain levels or medication side effects.
+Consider alternative pain management strategies if current regimen becomes ineffective.
+
+Signed:
+Dr. Jane Smith, MD
+Pain Management Department

@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
 
-import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
-import pandas as pd
-import os
-import sys
-import logging
 import base64
-from PIL import Image, ImageTk
-from io import BytesIO
-import subprocess
+import logging
+import os
 import shutil
+import subprocess
+import sys
+import tkinter as tk
 from datetime import datetime
+from io import BytesIO
+from tkinter import filedialog, messagebox, ttk
+
+import pandas as pd
+from PIL import Image, ImageTk
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-from helper.annotations import AnnotationViewer
 import helper.constants as CNST
+from helper.annotations import AnnotationViewer
 
 # Setting up logging
 logging.basicConfig(level=logging.DEBUG,
@@ -24,11 +25,11 @@ logging.basicConfig(level=logging.DEBUG,
 class View(tk.Tk):
     """Creates and manages the main GUI window for the MedSpaCy application.
 
-    This class is responsible for setting up and displaying the user interface, 
-    including tabs for configuring the NLP pipeline, entering concepts, adjusting 
-    advanced settings, and selecting directories for input/output. It also manages 
+    This class is responsible for setting up and displaying the user interface,
+    including tabs for configuring the NLP pipeline, entering concepts, adjusting
+    advanced settings, and selecting directories for input/output. It also manages
     events and actions related to the UI components.
-    
+
     Args:
         tk (module): The tkinter module for creating GUI elements.
     """
@@ -63,37 +64,37 @@ class View(tk.Tk):
         self.logger = logging.getLogger(__name__)
 
     def create_tab1_contents(self):
-        """Creates the contents of the first tab (Configure and Run the Pipeline). 
+        """Creates the contents of the first tab (Configure and Run the Pipeline).
 
-        This method sets up all the UI elements on the first tab, including project 
-        selection, concepts editing, advanced settings for sentence splitter, 
+        This method sets up all the UI elements on the first tab, including project
+        selection, concepts editing, advanced settings for sentence splitter,
         section detector, and negation detector, as well as input directory selection.
         """
         # Adjust font size for labels and buttons
         font_size = 12
-        
+
         # Add some margin space
         margin_x = 15
         margin_y = 5
-        
+
         # one empty row
         label_empty_row = tk.Label(self.tab1, text="")
         label_empty_row.grid(row=0, column=0, columnspan=4, padx=margin_x, pady=margin_y)
-        
+
         row1 = 1
-    
+
         # Project Section
         label_create_project = tk.Label(self.tab1, text="Please select or create your project folder:", font=("Helvetica", font_size))
         label_create_project.grid(row=row1, column=0, columnspan=2, sticky="w", padx=margin_x, pady=margin_y)
         btn_create_project = tk.Button(self.tab1, text="Create or Open a Project", font=("Helvetica", font_size), command=self.create_or_open_project)
-        btn_create_project.grid(row=row1, column=1, columnspan=1, sticky="ew", padx=margin_x, pady=margin_y)        
+        btn_create_project.grid(row=row1, column=1, columnspan=1, sticky="ew", padx=margin_x, pady=margin_y)
         self.label_project_path = tk.Label(self.tab1, text="Project Path: ", font=("Helvetica", font_size-2), width=80, anchor="w", justify="left", wraplength=500)
         self.label_project_path.grid(row=row1, column=2, columnspan=6, sticky="w", padx=margin_x, pady=margin_y)
 
         # Concepts Section
         label_enter_concepts = tk.Label(self.tab1, text="Enter or edit the concepts of your project: ", font=("Helvetica", font_size))
         label_enter_concepts.grid(row=row1+1, column=0, sticky="w", padx=margin_x, pady=margin_y)
-        
+
         btn_enter_concepts = tk.Button(self.tab1, text="Create/Update Concepts", font=("Helvetica", font_size), command=self.enter_concepts)
         btn_enter_concepts.grid(row=row1+1, column=1, columnspan=1, sticky="ew", padx=margin_x, pady=margin_y)
 
@@ -110,22 +111,22 @@ class View(tk.Tk):
         btn_adjust_sent_tokenizer.grid(row=row1+3, column=1, sticky="ew", padx=margin_x, pady=margin_y)
 
         label_adjust_sectionizer = tk.Label(self.tab1, text="Adjust the section detector", font=("Helvetica", font_size))
-        label_adjust_sectionizer.grid(row=row1+4, column=0, sticky="e", padx=margin_x, pady=margin_y) 
+        label_adjust_sectionizer.grid(row=row1+4, column=0, sticky="e", padx=margin_x, pady=margin_y)
         btn_adjust_sectionizer = tk.Button(self.tab1, text="Edit Section Rules", font=("Helvetica", font_size), command=self.adjust_sectionizer)
         btn_adjust_sectionizer.grid(row=row1+4, column=1, sticky="ew", padx=margin_x, pady=margin_y)
 
         label_negation_detector = tk.Label(self.tab1, text="Adjust the negation detector", font=("Helvetica", font_size))
-        label_negation_detector.grid(row=row1+5, column=0, sticky="e", padx=margin_x, pady=margin_y) 
+        label_negation_detector.grid(row=row1+5, column=0, sticky="e", padx=margin_x, pady=margin_y)
         btn_negation_detector = tk.Button(self.tab1, text="Edit Negation Rules", font=("Helvetica", font_size), command=self.adjust_negation_rules)
         btn_negation_detector.grid(row=row1+5, column=1, sticky="ew", padx=margin_x, pady=margin_y)
-    
+
         # Directory Selection Section
         input_dir_label = tk.Label(self.tab1, text="Select the directory with your input documents:", font=("Helvetica", font_size), width=37)
         input_dir_label.grid(row=row1+6, column=0, sticky="w", padx=margin_x, pady=margin_y)
-        
+
         self.input_dir_entry = tk.Entry(self.tab1)
         self.input_dir_entry.grid(row=row1+6, column=1, sticky="ew", columnspan=4, padx=margin_x, pady=margin_y)
-        
+
         input_dir_browse_btn = tk.Button(self.tab1, text="Browse", font=("Helvetica", font_size), command=self.browse_input_directory)
         input_dir_browse_btn.grid(row=row1+6, column=5, sticky="w", padx=margin_x, pady=margin_y)
 
@@ -147,13 +148,13 @@ class View(tk.Tk):
 
         # self.csv_file_label = tk.Label(self.tab1, text="(Note: )", font=("Helvetica", font_size - 3), fg="gray")
         # self.csv_file_label.grid(row=row1+8, column=1, sticky="w", padx=margin_x, pady=margin_y)
-    
+
         output_dir_label = tk.Label(self.tab1, text="Select the directory for your output results:", font=("Helvetica", font_size), width=32)
         output_dir_label.grid(row=row1+8, column=0, sticky="w", padx=margin_x, pady=margin_y)
-        
+
         self.output_dir_entry = tk.Entry(self.tab1)
         self.output_dir_entry.grid(row=row1+8, column=1, sticky="ew", columnspan=4, padx=margin_x, pady=margin_y)
-        
+
         output_dir_browse_btn = tk.Button(self.tab1, text="Browse", font=("Helvetica", font_size), command=self.browse_output_directory)
         output_dir_browse_btn.grid(row=row1+8, column=5, sticky="w", padx=margin_x, pady=margin_y)
 
@@ -184,19 +185,19 @@ class View(tk.Tk):
         # Process Button
         self.btn_process_notes = tk.Button(self.tab1, text="Process Documents", font=("Helvetica", font_size,"bold"), command=self.process_notes, state=tk.NORMAL)
         self.btn_process_notes.grid(row=row1+12, column=1, columnspan=2, sticky="ew", padx=margin_x, pady=margin_y)
-        
+
         # Review Annotated Documents
         self.btn_review_annotation_resuls = tk.Button(self.tab1, text="Review Annotated Documents", font=("Helvetica", font_size,"bold"), command=self.display_output_tab2, state=tk.DISABLED)
         self.btn_review_annotation_resuls.grid(row=row1+13, column=1, columnspan=2, sticky="ew", padx=margin_x, pady=margin_y)
 
         self.use_existing_output.trace_add("write", self.toggle_review_button)
         # self.csv_file_check.trace_add("write", self.toggle_csv_file_button)
-        
+
         # Configure grid weights for equal distribution
         for i in range(60):  # Adjust based on the number of rows
-            
+
             self.tab1.grid_rowconfigure(i, weight=1)
-       
+
         for j in range(60):  # Adjust based on the number of columns
             self.tab1.grid_columnconfigure(j, weight=1)
 
@@ -236,7 +237,7 @@ class View(tk.Tk):
         """
         tooltip = tk.Toplevel(widget)
         tooltip.withdraw()
-        tooltip.overrideredirect(True) 
+        tooltip.overrideredirect(True)
         label = tk.Label(tooltip, text=text, bg="#E3F2FD", relief="solid", borderwidth=1, font=("Helvetica", 10))
         label.pack(ipadx=5, ipady=2)
 
@@ -265,7 +266,7 @@ class View(tk.Tk):
     def toggle_review_button(self, *args):
         """Toggles the state of the review button based on the checkbox.
 
-        Enables or disables the review button and the process notes button, 
+        Enables or disables the review button and the process notes button,
         depending on whether the 'use existing output' checkbox is selected.
         """
         if self.use_existing_output.get():
@@ -284,13 +285,13 @@ class View(tk.Tk):
     def create_tab3(self):
         """Creates the 'About' tab in the user interface.
 
-        This method sets up the content for the third tab, including displaying 
+        This method sets up the content for the third tab, including displaying
         information about the medspacyV application, its origin, and purpose.
         """
         # Create an empty row
         self.empty_row2 = tk.Label(self.tab3, text="      ")
         self.empty_row2.grid(column=0, row=0, sticky='w')
-        
+
         label_font = ("Arial", 14, "bold")
         full_text = (
             "The medspacyV is a desktop application developed by the Mayo Clinic's "
@@ -307,8 +308,8 @@ class View(tk.Tk):
     def create_or_open_project(self):
         """Opens a project directory or creates a new one.
 
-        This method allows the user to either select an existing project directory 
-        or create a new one. It also sets up necessary directories and files, 
+        This method allows the user to either select an existing project directory
+        or create a new one. It also sets up necessary directories and files,
         such as creating a "resources" folder if it doesn't exist.
         """
         # Get the directory where the main Python script is located
@@ -335,26 +336,26 @@ class View(tk.Tk):
                         source_file = os.path.join(source_resources_dir, file_name)
                         if os.path.isfile(source_file):
                             shutil.copy(source_file, self.project_resources_dir)
-                    #print("the resources were copied")        
+                    #print("the resources were copied")
                 except Exception as e:
-                    messagebox.showerror("Error", f"Failed to copy resource files for your project: {e}") 
-                    self.log_error("Issues with selecting directory", f"Failed to copy resource files for your project: {e}") 
+                    messagebox.showerror("Error", f"Failed to copy resource files for your project: {e}")
+                    self.log_error("Issues with selecting directory", f"Failed to copy resource files for your project: {e}")
         self.update_rule_file_paths()
-        self.output_dir_entry.delete(0, tk.END)        
-        self.output_dir_entry.insert(0, self.project_path)  # Set default value 
+        self.output_dir_entry.delete(0, tk.END)
+        self.output_dir_entry.insert(0, self.project_path)  # Set default value
 
     def adjust_sent_tokenizer(self):
         """Allows the user to edit the sentence tokenizer rules.
 
-        This method checks if the project resources directory exists, and if so, 
-        opens the sentence rule file using Notepad for editing. It logs an error 
+        This method checks if the project resources directory exists, and if so,
+        opens the sentence rule file using Notepad for editing. It logs an error
         if the project directory is not selected.
         """
         if self.project_resources_dir == "":
             messagebox.showerror("Error", "Project directory not selected!")
             self.log_error("Issues with selecting directory", "Project directory not selected!")
             return
-        
+
         sent_rules_file = os.path.join(self.project_resources_dir, CNST.RESOURCE_SENTENCE_RULE)
         if os.path.exists(sent_rules_file):
             subprocess.Popen(['notepad.exe', sent_rules_file], creationflags=subprocess.CREATE_NO_WINDOW)
@@ -362,8 +363,8 @@ class View(tk.Tk):
     def adjust_sectionizer(self):
         """Allows the user to edit the sectionizer rules.
 
-        This method checks if the project resources directory exists, and if so, 
-        opens the section rule file using Notepad for editing. If the file is not 
+        This method checks if the project resources directory exists, and if so,
+        opens the section rule file using Notepad for editing. If the file is not
         found, it logs the error and shows an error message.
         """
         if not self.project_resources_dir:
@@ -381,8 +382,8 @@ class View(tk.Tk):
     def adjust_negation_rules(self):
         """Allows the user to edit the negation detection rules.
 
-        This method checks if the project resources directory exists, and if so, 
-        opens the negation rule file using Notepad for editing. If the file is not 
+        This method checks if the project resources directory exists, and if so,
+        opens the negation rule file using Notepad for editing. If the file is not
         found, it logs the error and shows an error message.
         """
         if not self.project_resources_dir:
@@ -400,14 +401,14 @@ class View(tk.Tk):
     def enter_concepts(self):
         """Allows the user to enter or edit the concepts file.
 
-        This method opens the concepts file in Excel. If the file doesn't exist, 
+        This method opens the concepts file in Excel. If the file doesn't exist,
         it creates a new one with the appropriate headers and opens it in Excel.
         """
         if not self.project_resources_dir:
             messagebox.showerror("Error", "Project directory not selected!")
             self.log_error("Issues with selecting directory", "Project directory not selected!")
             return
-        
+
         concepts_file = os.path.join(self.project_resources_dir, CNST.RESOURCE_CONCEPTS)
         concepts_file=concepts_file.replace('\\','/')
         if os.path.exists(concepts_file):
@@ -417,9 +418,9 @@ class View(tk.Tk):
             df = pd.DataFrame(columns=["CONCEPT_ID", "CONCEPT", "TERM", "IS_REGULAR_EXPRESSION", "IS_CASE_SENSITIVE"])
             df.to_excel(concepts_file, index=False)
             subprocess.Popen(['start', 'excel.exe', concepts_file], shell=True, creationflags=subprocess.CREATE_NO_WINDOW)
-        
+
         self.update_concept_label(concepts_file)
-        
+
     def update_concept_label(self, concepts_file):
         """Updates the label to display the path of the concepts file.
 
@@ -429,16 +430,16 @@ class View(tk.Tk):
         # Remove the label if it already exists
         if hasattr(self, 'concept_label'):
             self.concept_label.destroy()
-    
+
         # Create the label to display the path
         self.concept_label = tk.Label(self.tab1, text=concepts_file, width=80, anchor="w")
-        self.concept_label.grid(row=2, column=2, columnspan=6, sticky="w", padx=15, pady=5)    
+        self.concept_label.grid(row=2, column=2, columnspan=6, sticky="w", padx=15, pady=5)
 
     def update_rule_file_paths(self):
         """Updates the labels to display the paths of various rule files.
 
-        This method checks if the required rule files exist in the project resources 
-        directory. It then updates the displayed paths, indicating whether the 
+        This method checks if the required rule files exist in the project resources
+        directory. It then updates the displayed paths, indicating whether the
         files are found or not.
         """
         if not self.project_resources_dir:
@@ -477,7 +478,7 @@ class View(tk.Tk):
         file_status = negation_rules_file if os.path.exists(negation_rules_file) else 'File not found'
         self.label_negation_rules_path = tk.Label(self.tab1, text=f"{file_status}", width=90, anchor="w", justify="left", wraplength=500)
         self.label_negation_rules_path.grid(row=6, column=2, columnspan=6, sticky="w", padx=15, pady=5)
-                  
+
     def browse_input_directory(self):
         """Allows the user to browse and select the input directory.
 
@@ -508,9 +509,9 @@ class View(tk.Tk):
         Args:
             controller (Controller): The controller object that handles interactions between the view and the model.
         """
-        self.controller = controller     
-            
-           
+        self.controller = controller
+
+
     def update_project_path_label(self):
         """Updates the project path label with the selected project path.
 
@@ -522,9 +523,9 @@ class View(tk.Tk):
             project_path_text = f"Project Path: {self.project_path}"
             formatted_text = project_path_text.ljust(90)
             self.label_project_path.config(text=formatted_text)
-            
 
-    def process_notes(self):    
+
+    def process_notes(self):
         """Processes the clinical notes based on the selected project and resources.
 
         This method performs the following tasks:
@@ -559,7 +560,7 @@ class View(tk.Tk):
         df.columns = df.columns.str.strip()
         df = df.iloc[:, :5]
         df.columns=['CONCEPT_ID', 	'CONCEPT_CATEGORY',	'TERM_OR_REGEX','CASE_SENSITIVITY',"REGULAR_EXPRESSION"]
-        
+
         df = df.dropna(subset=['CONCEPT_ID', 'CONCEPT_CATEGORY']).drop_duplicates()
 
         if df.empty:
@@ -574,8 +575,8 @@ class View(tk.Tk):
             messagebox.showerror("Error", "Input and Output directories are required!")
             self.log_error("Issues with selecting the directory","Input and Output directories are required!")
             return
-        
-        
+
+
         if self.csv_file_check.get():
             csv_files = [f for f in os.listdir(self.input_dir) if f.endswith('.csv')]
             if not csv_files:
@@ -601,7 +602,7 @@ class View(tk.Tk):
                             "Please double-check your input path contains the exact CSV or TXT files used for generating the output XLSX."
                 )
                 return
-                
+
 
         self.project_resources_dir = self.project_resources_dir.replace('\\', '/')
         self.output_folder = ""
@@ -615,7 +616,7 @@ class View(tk.Tk):
             messagebox.showerror("Error", "Failed to process notes!")
             self.log_error("Issues with processing the document","Failed to process notes!")
             return
-        
+
         self.btn_review_annotation_resuls.config(state="normal")
         messagebox.showinfo("Info", "Processing complete. Annotation is ready!")
         self.output_dir_entry.delete(0, tk.END)
@@ -638,18 +639,18 @@ class View(tk.Tk):
                 messagebox.showerror("Error", "Please select an input directory first.")
                 self.log_error("Issues with selecting the directory","Please select an input directory first.")
                 return
-            
+
             if not os.listdir(self.input_dir):
                 messagebox.showerror("Error", "Input directory does not contain processed results.")
                 self.log_error("Issues with selecting the directory","Input directory does not contain processed results.")
                 return
-            
+
             if not self.output_dir:
                 self.logger.info(self.output_dir)
                 messagebox.showerror("Error", "Please select an output directory first.")
                 self.log_error("Issues with selecting the directory","Please select an output directory first.")
                 return
-            
+
             if not os.listdir(self.output_dir):
                 messagebox.showerror("Error", "Output directory does not contain processed results.")
                 self.log_error("Issues with selecting the directory","Output directory does not contain processed results.")
@@ -661,7 +662,7 @@ class View(tk.Tk):
             if self.use_existing_output.get():
                 if self.output_folder:
                     self.output_dir = self.output_folder
-                
+
                 output_file = []
                 xlsx_files = [file for file in os.listdir(self.output_dir) if file.endswith(".xlsx")]
                 if not xlsx_files:
@@ -676,12 +677,12 @@ class View(tk.Tk):
                         messagebox.showerror("Error", "The columns in the output XLSX don't look right, or there is no record in it. Please see the debug.log file in the same folder as your Controller.exe of medspacyV for possible cause.")
                         self.log_error("The columns in the output XLSX don't look right, or there is no record in it.", f"The headers of the output file doesn't match the original columns which are: \n{', '.join(CNST.OUTPUT_HEADERS)}")
                         return
-                    
+
                     if df["doc_name"].dropna().astype(str).str.strip().empty:
                         messagebox.showerror("Error", "The columns in the output XLSX don't look right, or there is no record in it. Please see the debug.log file in the same folder as your Controller.exe of medspacyV for possible cause.")
                         self.log_error("The columns in the output XLSX don't look right, or there is no record in it.","The output file is empty because no matches were found for the given concepts in the input notes. \nPlease review the concepts and input data or verify that you have selected the correct output folder.")
                         return
-                        
+
 
                     for doc_id in df["doc_name"].astype(str).unique():
                         output_doc_ids.add(doc_id)
@@ -703,7 +704,7 @@ class View(tk.Tk):
                                     "There are no CSV file in the given input folder, since you checked the 'Use CSV as input' CSV files must be present in the input folder." +
                                     "\nPlease double-check your input path contains the exact CSV or TXT files used for generating the output XLSX.")
                         return
-                    
+
                     input_doc_ids = set()
                     for csv_file in csv_files:
                         input_csv_path = os.path.normpath(os.path.join(self.input_dir, csv_file))
@@ -721,12 +722,12 @@ class View(tk.Tk):
                             "The input and output files do not correspond correctly to each other. Please double-check if the 'Use CSV as input' box is correctly (un)checked. \nPlease see the debug.log file in the same folder as your Controller.exe of medspacyV for possible cause."
                         )
                         self.log_error("The input and output files do not correspond correctly to each other.",
-                                    "Mismatch: Some input files do not have corresponding processed results in the output folder.\n" + 
-                                    f"The following are not present in the input:\n\n" +
+                                    "Mismatch: Some input files do not have corresponding processed results in the output folder.\n" +
+                                    "The following are not present in the input:\n\n" +
                                     "\n".join(missing_list) + truncated_message +
                                     "\nPlease double-check your input path contains the exact CSV or TXT files used for generating the output XLSX.")
                         return
-                    
+
                 else:
                     if "text" not in output_file[0].split(".")[0]:
                         messagebox.showerror("Error", "The input and output files do not correspond correctly to each other. 'Use CSV as input' box is correctly (un)checked. \nPlease see the debug.log file in the same folder as your Controller.exe of medspacyV for possible cause.")
@@ -734,7 +735,7 @@ class View(tk.Tk):
                                     "You have not selected 'Use CSV as input' to process the .TXT files, but the specified output folder corresponds to processed .CSV file inputs." +
                                     "\nPlease double-check your input path contains the exact CSV or TXT files used for generating the output XLSX.")
                         return
-                    
+
                     txt_files = [f for f in os.listdir(self.input_dir) if f.endswith('.txt')]
                     if not txt_files:
                         messagebox.showerror(
@@ -745,7 +746,7 @@ class View(tk.Tk):
                                     "There are no TXT file in the given input folder, since you unchecked the 'Use CSV as input' CSV files must be present in the input folder." +
                                     "\nPlease double-check your input path contains the exact CSV or TXT files used for generating the output XLSX.")
                         return
-                    
+
                     input_filenames = {os.path.splitext(f)[0]+os.path.splitext(f)[1] for f in os.listdir(self.input_dir)}
                     missing_files =  output_doc_ids - input_filenames
 
@@ -758,12 +759,12 @@ class View(tk.Tk):
                             "The input and output files do not correspond correctly to each other. Please see the debug.log file in the same folder as your Controller.exe of medspacyV for possible cause."
                         )
                         self.log_error("The input and output files do not correspond correctly to each other.",
-                                    "Mismatch: Some input files do not have corresponding processed results in the output folder.\n" + 
-                                    f"The following are not present in the input:\n\n" +
+                                    "Mismatch: Some input files do not have corresponding processed results in the output folder.\n" +
+                                    "The following are not present in the input:\n\n" +
                                     "\n".join(missing_list) + truncated_message +
                                     "\nPlease double-check your input path contains the exact CSV or TXT files used for generating the output XLSX.")
                         return
-                
+
                 new_window = tk.Toplevel(self)
                 annotation_viewer = AnnotationViewer(new_window, self.output_dir, self.input_dir, self.csv_file_check.get())
             else:
@@ -796,31 +797,31 @@ class View(tk.Tk):
                                     "Please double-check your input path contains the exact CSV or TXT files used for generating the output XLSX."
                         )
                         return
-                
+
                 new_window = tk.Toplevel(self)
                 annotation_viewer = AnnotationViewer(new_window, self.output_folder, self.input_dir, self.csv_file_check.get())
-        
+
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred while displaying the output: {str(e)}")
 
     def reset_progress(self):
         """Resets the progress bar to 0 and updates the progress label.
 
-        This method is typically used to reset the progress bar and label 
+        This method is typically used to reset the progress bar and label
         to their initial state before starting a new operation or process.
         """
         self.progress['value'] = 0
         self.progress_label.config(text="0%")
         self.update_idletasks()
-    
+
     def update_progress(self, value, prog):
         """Updates the progress bar and label with the current progress.
 
         Args:
             value (float): The current value of the progress (0 to 100).
             prog (str): A description or label to be displayed alongside the progress percentage.
-        
-        This method is typically used to update the progress bar and the associated 
+
+        This method is typically used to update the progress bar and the associated
         label as the process progresses, showing the current value and progress description.
         """
         self.progress['value'] = value

@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['Controller.py'],
+    ['controller.py'],
     pathex=[],
     binaries=[],
     datas=[('resources', 'resources'), ('resources', 'resources/en')],
@@ -21,7 +21,7 @@ a = Analysis(
 )
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 splash = Splash(
-    'splash_image.png',
+    'assets/splash_image.PNG',
     binaries=a.binaries,
     datas=a.datas,
     text_pos=None,

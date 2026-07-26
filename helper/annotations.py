@@ -1,21 +1,22 @@
 # importing necessary libraries
 
-import os
-import sys
 import argparse
 import logging
+import os
+import sys
+import tkinter as tk
+import tkinter.font as tkfont
+from tkinter import messagebox
+
 import numpy as np
 import pandas as pd
 
-import tkinter as tk
-from tkinter import messagebox
-import tkinter.font as tkfont
-
 # importing custom modules
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-import helper.constants as CNST
 # ADDED: needed to parse sanitized CSV text from memory.
 import io
+
+import helper.constants as CNST
 
 # Setting up logging
 logging.basicConfig(level=logging.DEBUG,
@@ -177,7 +178,7 @@ class AnnotationViewer:
             self.load_current_file()
         else:
             messagebox.showerror("Error", "No Excel files found in the specified folder.")
-            self.logger.error(f"Error - No Excel files found in the specified folder.")
+            self.logger.error("Error - No Excel files found in the specified folder.")
 
     def load_current_file(self):
         """

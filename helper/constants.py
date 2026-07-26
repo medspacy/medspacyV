@@ -36,8 +36,8 @@ COLOR_LIST = ['#E69F00',
               ]
 
 OUTPUT_HEADERS = [
-    "doc_name", "concept", "matched_text", "concept_start", "concept_end", 
-    "sentence", "sentence_start", "sentence_end", "section_id", "matched_section_header", 
+    "doc_name", "concept", "matched_text", "concept_start", "concept_end",
+    "sentence", "sentence_start", "sentence_end", "section_id", "matched_section_header",
     "is_negated", "is_family", "is_uncertain", "is_historical", "is_hypothetical"
 ]
 

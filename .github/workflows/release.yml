@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  build-exe:
+    name: Build Windows EXE
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install cython wheel "setuptools<75"
+          pip install loguru PyFastNER
+          pip install pyrush --no-build-isolation --no-deps
+          pip install -r requirements-dev.txt
+          pip install pyinstaller==5.13.2 "py-splash>=0.4.5"
+
+      - name: Download spacy model
+        run: python -m spacy download en_core_web_sm
+
+      - name: Build EXE with PyInstaller
+        run: pyinstaller controller.spec --noconfirm
+
+      - name: Upload EXE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: medspacyV-windows
+          path: dist/Controller.exe
+
+      - name: Create GitHub Release and attach EXE
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/Controller.exe
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

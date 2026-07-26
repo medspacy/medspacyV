@@ -1,9 +1,10 @@
+import logging
 import os
 import sys
-import logging
+from tkinter import messagebox
+
 from model import Model
 from view import View
-from tkinter import messagebox
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 import helper.constants as CNST
@@ -17,7 +18,7 @@ logging.basicConfig(level=logging.DEBUG,
 
 class Controller:
     """Handles the control logic between View and Model"""
-    
+
     def __init__(self, view, model):
         """Initializes the controller with view and model.
 
@@ -45,30 +46,30 @@ class Controller:
             self.view.show_error("Project directory not selected!")
             self.logger.error("Project directory not selected.")
             return
-        
+
         if not input_dir or not output_dir:
             self.view.show_error("Input and Output directories are required!")
             self.logger.error("Input and Output directories are required.")
             return
-        
+
         try:
             self.view.reset_progress()
             self.logger.info(f"Starting NLP processing with input: {input_dir}, output: {output_dir}, project_resources: {project_resources_dir}, project: {project_path}")
-            
-            output_folder = self.model.perform_nlp(input_dir, 
-                                                 output_dir, 
-                                                 project_resources_dir, 
-                                                 project_path, 
+
+            output_folder = self.model.perform_nlp(input_dir,
+                                                 output_dir,
+                                                 project_resources_dir,
+                                                 project_path,
                                                  CNST.INPUT_MODE,
                                                  csv_file_chk,
                                                  self.view.update_progress)
-            
+
             self.logger.info(f"NLP processing completed. Output folder: {output_folder}")
             self.view.output_folder = output_folder
         except Exception as e:
             self.logger.error(f"Error processing notes: {e}")
             messagebox.showinfo("Error", f"An error occurred: {e}")
-            
+
 
 # Main function to run the application
 def main():
